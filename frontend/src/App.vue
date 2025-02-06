@@ -1,5 +1,5 @@
 <template>
-  <nav class="py-5 px-8 border-b border-gray-200">
+  <nav class="py-5 px-8 border-b border-gray-100">
     <div class="max-w-7xl mx-auto">
       <div class="flex items-center justify-between">
         <div class="menu-left">
@@ -39,7 +39,7 @@
     </div>
   </nav>
 
-  <main class="px-8 py-6 bg-gray-100">
+  <main class="px-8 py-8">
     <RouterView />
   </main>
 </template>
@@ -54,4 +54,10 @@
 a:hover {
   font-weight: 600;
 }
+
+main{
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
 </style>
