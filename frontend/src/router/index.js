@@ -18,6 +18,11 @@ const router = createRouter({
       component: LoginView
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView
+    },
+    {
       path: '/signup',
       name: 'signup',
       component: SignupView

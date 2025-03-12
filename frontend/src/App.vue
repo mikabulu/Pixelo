@@ -32,7 +32,7 @@
 
         <div class="menu-right">
           <a href="#">
-            <img src="" class="rounded-full">
+            <img src="./assets/charlie.jpg" class="h-15 w-15 mb-3 rounded-full object-cover">
           </a>
         </div>
       </div>
@@ -45,7 +45,8 @@
 </template>
 
 <style>
-.feed-icon a, .explore-icon a {
+.feed-icon a,
+.explore-icon a {
   display: flex;
   flex-direction: row;
   gap: 8px;
@@ -55,9 +56,8 @@ a:hover {
   font-weight: 600;
 }
 
-main{
+main {
   background: #f5f5f5;
   min-height: 100vh;
 }
-
 </style>

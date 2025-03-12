@@ -1,192 +1,75 @@
 <template>
-    <div class="grid-container">
-        <div class="profile-header">
-            <div class="profile-card">
-                <img src="" class="profile-image">
-                <p class="profile-name"><strong>User</strong></p>
-                <div class="profile-stats">
-                    <p class="stat">Friends</p>
-                    <p class="stat">Posts</p>
+    <!-- Main Container -->
+    <div class="max-w-3xl mx-auto p-4">
+        <div class="grid grid-cols-1 gap-4">
+            <!-- Profile Container -->
+            <div class="w-full min-h-64 bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center">
+                <img src="../assets/charlie.jpg" class="h-40 w-40 mb-3 rounded-full object-cover">
+                <p><strong>Charlie</strong></p>
+                <div class="mt-3 flex space-x-8 justify-around">
+                    <p class="text-xs text-gray-500">X friends</p>
+                    <p class="text-xs text-gray-500">X posts</p>
                 </div>
-                <p class="bio">Bio</p>
-            </div>
-        </div>
-
-        <div class="content-area">
-            <div class="post-create">
-                <div class="post-input">
-                    <textarea class="input-field" placeholder="Post"></textarea>
-                </div>
-                <div class="post-actions">
-                    <a href="#" class="btn btn-gray">Attach</a>
-                    <a href="#" class="btn btn-purple">Post</a>
-                </div>
+                <p class="text-xs text-500 mt-4">Biography</p>
+                <button
+                    class="bg-[#bfdaa4] text-black py-2 px-4 mt-4 rounded-md hover:bg-[#a9c191] focus:outline-none focus:ring-2 focus:ring-black">
+                    Add Post
+                </button>
             </div>
 
-            <div class="post-card">
-                <div class="post-header">
-                    <div class="user-info">
-                        <img src="" class="user-avatar">
-                        <p class="user-name"><strong>User</strong></p>
+            <!-- Post Container -->
+            <div class="w-full aspect-square bg-white rounded-lg shadow-md p-4 flex flex-col">
+                <!-- Header -->
+                <div class="mb-6 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <img src="../assets/charlie.jpg" class="w-[40px] rounded-full">
+
+                        <p><strong>Charlie</strong></p>
                     </div>
-                    <p class="post-time">1 minute ago</p>
+                    <p class="text-gray-600">X minutes ago</p>
                 </div>
-                <img src="" class="post-image">
-                <div class="post-footer">
+
+                <!-- Post  -->
+                <img src="../assets/charlie.jpg" class="w-full rounded-lg flex-grow my-4 mt-0">
+
+                <!-- Comments/Likes -->
+                <div class="mt-auto flex justify-between">
+                    <div class="flex space-x-6">
+                        <div class="flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z">
+                                </path>
+                            </svg>
+
+                            <span class="text-gray-500 text-xs">X likes</span>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z">
+                                </path>
+                            </svg>
+
+                            <span class="text-gray-500 text-xs">X comments</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </template>
-
+  
 <script>
 
+export default {
+    name: 'GridLayout',
+
+}
 </script>
-<style>
-.grid-container {
-    max-width: 80rem;
-    margin: 0 auto;
-    display: grid;
-    grid-template-areas:
-        "header"
-        "content";
-    gap: 1rem;
-    width: 100%;
-}
+  
 
-.profile-header {
-    grid-area: header;
-    width: 100%;
-    max-width: 48rem;
-    margin: 0 auto;
-}
-
-.content-area {
-    grid-area: content;
-    width: 100%;
-    max-width: 48rem;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-}
-
-.post-create,
-.post-card {
-    width: 100%;
-}
-
-.profile-card {
-    padding: 1rem;
-    background-color: #bfdaa4;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    text-align: center;
-    height: 15rem;
-}
-
-.profile-image {
-    margin-bottom: 1.5rem;
-    border-radius: 9999px;
-}
-
-.profile-stats {
-    margin-top: 1.5rem;
-    display: flex;
-    justify-content: space-around;
-    gap: 2rem;
-}
-
-.stat {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-.bio{
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-    background-color: white;
-    padding: 2rem;
-    border-radius: 0.5rem;
-}
-
-.post-create {
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-}
-
-.post-input {
-    padding: 1rem;
-}
-
-.input-field {
-    width: 100%;
-    padding: 1rem;
-    background-color: #f3f4f6;
-    border-radius: 0.5rem;
-}
-
-.post-actions {
-    padding: 1rem;
-    border-top: 1px solid #f3f4f6;
-    display: flex;
-    justify-content: space-between;
-}
-
-.btn {
-    display: inline-block;
-    padding: 1rem 1.5rem;
-    border-radius: 0.5rem;
-    color: white;
-    margin: 0.5rem;
-}
-
-.btn-gray {
-    background-color: #4b5563;
-}
-
-.btn-purple {
-    background-color:#bfdaa4;
-}
-
-.post-card {
-    padding: 1rem;
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-}
-
-.post-header {
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.user-avatar {
-    width: 40px;
-    border-radius: 9999px;
-}
-
-.post-time {
-    color: #4b5563;
-}
-
-.post-image {
-    width: 100%;
-    border-radius: 0.5rem;
-}
-
-.post-footer {
-    margin: 1.5rem 0;
-    display: flex;
-    justify-content: space-between;
-}
-</style>
+<style scoped></style>

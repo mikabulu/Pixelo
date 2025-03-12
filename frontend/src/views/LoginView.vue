@@ -23,7 +23,7 @@
 
                 <p class="text-center text-sm text-gray-600">
                     Don't have an account?
-                    <a href="#" class="text-black hover:text-[#bfdaa4] font-medium">Sign up</a>
+                    <RouterLink :to="{'name': 'signup'}" class="text-black hover:text-[#bfdaa4] font-medium">Sign up</RouterLink>
                 </p>
             </div>
         </div>
