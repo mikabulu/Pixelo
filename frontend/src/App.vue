@@ -6,7 +6,7 @@
           <a href="#" class="text-xl">Pixelo</a>
         </div>
 
-        <div class="menu-center flex space-x-12">
+        <div class="menu-center flex space-x-12" v-if="userStore.user.isAuthenticated">
           <div class="feed-icon">
             <a href="#">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="black"
@@ -31,11 +31,13 @@
         </div>
 
         <div class="menu-right">
-          <a href="#">
-            <RouterLink :to="{ 'name': 'profile' }">
-              <img src="./assets/charlie.jpg" class="h-15 w-15 mb-3 rounded-full object-cover">
-            </RouterLink>
-          </a>
+          <template v-if="userStore.user.isAuthenticated">
+            <a href="#">
+              <RouterLink :to="{ 'name': 'profile' }">
+                <img src="./assets/charlie.jpg" class="h-15 w-15 mb-3 rounded-full object-cover">
+              </RouterLink>
+            </a>
+          </template>
         </div>
       </div>
     </div>
@@ -67,11 +69,32 @@ main {
 </style>
 
 <script>
+import axios from 'axios'
 import Toast from '@/components/Toast.vue'
+import { useUserStore } from '@/stores/user'
 
 export default {
+  setup() {
+    const userStore = useUserStore()
+
+    return {
+      userStore
+    }
+  },
   components: {
     Toast
+  },
+
+  beforeCreate() {
+    this.userStore.initStore()
+
+    const token = this.userStore.user.access
+
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+    } else {
+      axios.defaults.headers.common["Authorization"] = "";
+    }
   }
 }
 </script>

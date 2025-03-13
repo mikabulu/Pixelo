@@ -91,7 +91,7 @@ export default {
                 .post('/api/signup/', this.form)
                 .then(response => {
                     if (response.data.message === 'success'){
-                        this.toastStore.showToast(5000, 'You are now registered. Please log in')
+                        this.toastStore.showToast(5000, 'Success! Please log in')
 
                         //resets form 
                         this.form.name=''

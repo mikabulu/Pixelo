@@ -3,18 +3,24 @@
         <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
             <h1 class="text-2xl font-bold text-center mb-8">Sign in to your account</h1>
 
-            <div class="space-y-6">
+            <form class="space-y-6" v-on:submit.prevent="submitForm">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Email address</label>
-                    <input type="email"
+                    <input type="email" v-model="form.email"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input type="password"
+                    <input type="password" v-model="form.password"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
                 </div>
+
+                <template v-if="errors">
+                    <div class>
+                        <p v-for="error in errors" v-bind:key="error">{{ error }}</p>
+                    </div>
+                </template>
 
                 <button
                     class="w-full bg-[#bfdaa4] text-black py-2 px-4 rounded-md hover:bg-[#a9c191] focus:outline-none focus:ring-2 focus:ring-black">
@@ -23,9 +29,68 @@
 
                 <p class="text-center text-sm text-gray-600">
                     Don't have an account?
-                    <RouterLink :to="{'name': 'signup'}" class="text-black hover:text-[#bfdaa4] font-medium">Sign up</RouterLink>
+                    <RouterLink :to="{ 'name': 'signup' }" class="text-black hover:text-[#bfdaa4] font-medium">Sign up
+                    </RouterLink>
                 </p>
-            </div>
+            </form>
         </div>
     </div>
 </template>
+
+<script>
+import axios from 'axios'
+import { useUserStore } from '@/stores/user'
+export default {
+    setup(){
+        const userStore = useUserStore()
+        return {
+            userStore
+        }
+    },
+    data() {
+        return {
+            form: {
+                email: '',
+                password: '',
+            },
+            errors: []
+        }
+    },
+    methods: {
+        async submitForm() {
+            this.errors = []
+            if (this.form.email===''){
+                this.errors.push('Please input email')
+            }
+            if (this.form.password===''){
+                this.errors.push('Please input password')
+            }
+
+            if (this.errors.length === 0 ){
+                await axios
+                .post('/api/login/', this.form)
+                .then(response => {
+                    this.userStore.setToken(response.data)
+                    axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.access
+                })
+                .catch(error => {
+                    console.log('error', error)
+                })
+
+                await axios
+                .get('/api/me/')
+                .then(response => {
+                    this.userStore.setUserInfo(response.data)
+                    this.$router.push('/profile')
+                })
+                .catch(error => {
+                    console.log('error', error)
+                })
+
+
+            }
+
+        }
+    }
+}
+</script>
