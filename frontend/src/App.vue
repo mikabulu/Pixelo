@@ -44,6 +44,8 @@
   <main class="px-8 py-8">
     <RouterView />
   </main>
+
+  <Toast />
 </template>
 
 <style>
@@ -63,3 +65,13 @@ main {
   min-height: 100vh;
 }
 </style>
+
+<script>
+import Toast from '@/components/Toast.vue'
+
+export default {
+  components: {
+    Toast
+  }
+}
+</script>
