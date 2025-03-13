@@ -3,7 +3,7 @@
     <div class="max-w-3xl mx-auto p-4">
         <div class="grid grid-cols-1 gap-4">
             <!-- Profile Container -->
-            <div class="w-full min-h-64 bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center">
+            <div class="w-full min-h-64 bg-white rounded-lg shadow-md pt-6 flex flex-col items-center justify-center">
                 <img src="../assets/charlie.jpg" class="h-40 w-40 mb-3 rounded-full object-cover">
                 <p><strong>Charlie</strong></p>
                 <div class="mt-3 flex space-x-8 justify-around">
@@ -15,6 +15,22 @@
                     class="bg-[#bfdaa4] text-black py-2 px-4 mt-4 rounded-md hover:bg-[#a9c191] focus:outline-none focus:ring-2 focus:ring-black">
                     Add Post
                 </button>
+                <ul
+                    class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:border-gray-700 dark:text-gray-400 mt-5">
+                    <li class="me-2">
+                        <a href="#" aria-current="page"
+                            class="inline-block p-4 text-[#a9c191] rounded-t-lg dark:text-blue-500">Feed</a>
+                    </li>
+                    <li class="me-2">
+                        <a href="#"
+                            class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-[#bfdaa4] dark:hover:text-gray-300">Gallery</a>
+                    </li>
+                    <li class="me-2">
+                        <a href="#"
+                            class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-[#bfdaa4] dark:hover:text-gray-300">Portfolio</a>
+                    </li>
+                </ul>
+
             </div>
 
             <!-- Post Container -->
