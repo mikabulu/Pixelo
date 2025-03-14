@@ -81,7 +81,10 @@ export default {
                 .get('/api/me/')
                 .then(response => {
                     this.userStore.setUserInfo(response.data)
-                    this.$router.push('/profile')
+                    this.$router.push({
+                        name: 'profiles', 
+                        params: {id: this.userStore.user.id}
+                    })
                 })
                 .catch(error => {
                     console.log('error', error)
