@@ -12,6 +12,7 @@
                 </div>
                 <p class="text-xs text-500 mt-4">Biography</p>
                 <button
+                    @click="showAddPostModal = true"
                     class="bg-[#bfdaa4] text-black py-2 px-4 mt-4 rounded-md hover:bg-[#a9c191] focus:outline-none focus:ring-2 focus:ring-black">
                     Add Post
                 </button>
@@ -34,19 +35,21 @@
             </div>
 
             <!-- Post Container -->
-            <div class="w-full aspect-square bg-white rounded-lg shadow-md p-4 flex flex-col">
+            <div class="w-full aspect-square bg-white rounded-lg shadow-md p-4 flex flex-col" v-for="post in posts"
+                v-bind:key="post.id">
                 <!-- Header -->
                 <div class="mb-6 flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <img src="../assets/charlie.jpg" class="w-[40px] rounded-full">
 
-                        <p><strong>Charlie</strong></p>
+                        <p><strong>{{ post.created_by.name }}</strong></p>
                     </div>
-                    <p class="text-gray-600">X minutes ago</p>
+                    <p class="text-gray-600">{{ post.created_at_formatted }} ago</p>
                 </div>
 
-                <!-- Post  -->
-                <img src="../assets/charlie.jpg" class="w-full rounded-lg flex-grow my-4 mt-0">
+                <!-- Posts  -->
+                <p>{{ post.body }}</p>
+
 
                 <!-- Comments/Likes -->
                 <div class="mt-auto flex justify-between">
@@ -77,12 +80,81 @@
             </div>
         </div>
     </div>
+
+    <!-- Add Post Modal -->
+    <div v-if="showAddPostModal" class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50">
+        <div class="bg-white border border-gray-200 rounded-lg max-w-lg w-full mx-4">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="font-semibold">Add Post</h3>
+                <button @click="showAddPostModal = false" class="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            <form v-on:submit.prevent="submitFormAndClose" method="post">
+                <div class="p-4">
+                    <textarea v-model="body" class="p-4 w-full bg-gray-100 rounded-lg" placeholder="Add Post"></textarea>
+                </div>
+
+                <div class="p-4 border-t border-gray-100 flex justify-between">
+                    <a href="#" class="inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">Attach image</a>
+
+                    <button class="inline-block py-4 px-6 bg-[#bfdaa4]  text-white rounded-lg">Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </template>
   
 <script>
-
+import axios from 'axios'
 export default {
     name: 'GridLayout',
+
+    data() {
+        return {
+            posts: [],
+            body: '',
+            showAddPostModal: false,
+        }
+    },
+
+
+    mounted() {
+        this.getFeed()
+    },
+    methods: {
+        getFeed() {
+            axios
+                .get('/api/posts/')
+                .then(response => {
+                    console.log('data', response.data)
+                    this.posts = response.data
+                })
+                .catch(error => {
+                    console.log('error', error)
+                })
+        },
+
+        submitForm() {
+            console.log('submitForm', this.body)
+
+            axios
+            .post('/api/posts/create/', {
+                'body': this.body
+            })
+            .then(response => {
+                console.log('data', response.data)
+                this.posts.unshift(response.data)
+                this.body=''
+            })
+            .catch(error => {
+                    console.log('error', error)
+            })
+        },
+
+        submitFormAndClose() {
+            this.submitForm()
+            this.showAddPostModal = false
+        }
+    }
 
 }
 </script>
