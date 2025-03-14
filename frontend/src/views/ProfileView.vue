@@ -21,7 +21,7 @@
                     <li class="me-2">
                         <a href="#" aria-current="page"
                             class="inline-block p-4 text-[#a9c191] rounded-t-lg dark:text-blue-500">Feed</a>
-                    </li>
+                     </li>
                     <li class="me-2">
                         <a href="#"
                             class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-[#bfdaa4] dark:hover:text-gray-300">Gallery</a>
