@@ -4,6 +4,7 @@ import ProfileView from '../views/ProfileView.vue'
 import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
 import ExploreView from '../views/ExploreView.vue'
+import ProfilesView from '../views/ProfilesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,7 +32,12 @@ const router = createRouter({
     {
       path: '/explore',
       name: 'explore',
-      component: ExploreView,
+      component: ExploreView
+    },
+    {
+      path: '/profiles/:id',
+      name: 'profiles',
+      component: ProfilesView
     },
     {
       path: '/about',
