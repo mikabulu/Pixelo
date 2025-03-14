@@ -93,6 +93,19 @@ export default {
     } else {
       axios.defaults.headers.common["Authorization"] = "";
     }
+  },
+  mounted() {
+    // fetch user dasta when component mounted
+    if (this.userStore.user.isAuthenticated) {
+      axios
+        .get('/api/me/')
+        .then(response => {
+          this.userStore.setUserInfo(response.data)
+        })
+        .catch(error => {
+          console.log('error', error)
+        })
+    }
   }
 }
 </script>

@@ -13,7 +13,7 @@
                 <p class="text-xs text-500 mt-4">Biography</p>
                 <button @click="showAddPostModal = true"
                     class="bg-[#bfdaa4] text-black py-2 px-4 mt-4 rounded-md hover:bg-[#a9c191] focus:outline-none focus:ring-2 focus:ring-black"
-                    v-if="userStore.user.id===user.id"> <!--don't show add post on other users profiles-->
+                    v-if="userStore.user.id === user.id"> <!--don't show add post on other users-->
                     Add Post
                 </button>
                 <ul
@@ -48,8 +48,8 @@
                 </div>
 
                 <!-- Posts  -->
-                <p>{{ post.body }}</p>
-
+                <img src="../assets/charlie.jpg" class="my-4">
+                <p class="mb-3">{{ post.body }}</p>
 
                 <!-- Comments/Likes -->
                 <div class="mt-auto flex justify-between">
@@ -121,12 +121,19 @@ export default {
         return {
             posts: [],
             user: {},
-            body:'',
+            body: '',
             showAddPostModal: false,
         }
     },
-
-
+    watch: {
+        //observes changes to user ID and refreshes component
+        '$route.params.id': {
+            handler(newId) {
+                this.getFeed();
+            },
+            immediate: true 
+        }
+    },
     mounted() {
         this.getFeed()
     },
