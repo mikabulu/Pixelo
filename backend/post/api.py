@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from .serializers import PostSerializer
 from .models import Post
 from .forms import PostForm
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view
 from account.models import User
 from account.serializers import UserSerializer
 

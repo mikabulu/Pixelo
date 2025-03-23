@@ -27,6 +27,7 @@ class CustomUserManager(UserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self._create_user(name, email, password, **extra_fields)
+    
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -34,6 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255, blank=True, default='')
     avatar = models.ImageField(upload_to='avatars', blank=True, null=True)
+
 
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -47,3 +49,38 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+    def follow(self, user):
+        if self != user: #don't follow yourself 
+            Follow.objects.get_or_create(follower=self, followed=user)
+
+    def unfollow(self, user):
+        Follow.objects.filter(follower=self, followed=user).delete()
+
+    def is_following(self, user):
+        return self.following.filter(followed=user).exists()
+    
+    def get_followers_count(self):
+        return self.followers.count()
+    
+    def get_following_count(self):
+        return self.following.count()
+    
+    def get_followers(self): #get all followers
+        return User.objects.filter(following__followed=self)
+    
+    def get_following(self): #get all following
+        return User.objects.filter(followers__follower=self)
+    
+class Follow(models.Model):
+    id = models.UUIDField(primary_key = True, default=uuid.uuid4, editable=False)
+    follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+    followed = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta: 
+        unique_together = ('follower', 'followed') #to prevent duplicate following
+
+    def __str__(self):
+        return f'{self.follower.name} follows {self.followed.name}'
+    

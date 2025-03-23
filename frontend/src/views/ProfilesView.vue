@@ -2,36 +2,50 @@
     <!-- Main Container -->
     <div class="max-w-3xl mx-auto p-4">
         <div class="grid grid-cols-1 gap-4">
+
             <!-- Profile Container -->
-            <div class="w-full min-h-64 bg-white rounded-lg shadow-md pt-6 flex flex-col items-center justify-center">
-                <img src="../assets/charlie.jpg" class="h-40 w-40 mb-3 rounded-full object-cover">
-                <p><strong>{{ user.name }}</strong></p>
-                <div class="mt-3 flex space-x-8 justify-around">
-                    <p class="text-xs text-gray-500">X friends</p>
-                    <p class="text-xs text-gray-500">X posts</p>
-                </div>
-                <p class="text-xs text-500 mt-4">Biography</p>
-                <button @click="showAddPostModal = true"
-                    class="bg-[#bfdaa4] text-black py-2 px-4 mt-4 rounded-md hover:bg-[#a9c191] focus:outline-none focus:ring-2 focus:ring-black"
-                    v-if="userStore.user.id === user.id"> <!--don't show add post on other users-->
+            <div class="w-full min-h-64 bg-white rounded-lg shadow-md pt-6 relative"> 
+                <button v-if="userStore.user.id !== user.id"
+                    :class="isFollowing ? 'bg-gray-300 hover:bg-gray-400' : 'bg-[#bfdaa4] hover:bg-[#a9c191]'"
+                    class="absolute top-4 right-4 text-black py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                    @click="toggleFollow">
+                    {{ isFollowing ? 'Unfollow' : 'Follow' }}
+                </button>
+
+                <!-- Add Post - self only  -->
+                <button v-if="userStore.user.id === user.id" @click="showAddPostModal = true"
+                    class="absolute top-4 right-4 bg-[#bfdaa4] text-black py-2 px-4 rounded-md hover:bg-[#a9c191] focus:outline-none focus:ring-2 focus:ring-black">
                     Add Post
                 </button>
-                <ul
-                    class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:border-gray-700 dark:text-gray-400 mt-5">
-                    <li class="me-2">
-                        <a href="#" aria-current="page"
-                            class="inline-block p-4 text-[#a9c191] rounded-t-lg dark:text-blue-500">Feed</a>
-                    </li>
-                    <li class="me-2">
-                        <a href="#"
-                            class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-[#bfdaa4] dark:hover:text-gray-300">Gallery</a>
-                    </li>
-                    <li class="me-2">
-                        <a href="#"
-                            class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-[#bfdaa4] dark:hover:text-gray-300">Portfolio</a>
-                    </li>
-                </ul>
 
+
+                <div class="flex flex-col items-center justify-center">
+                    <img src="../assets/charlie.jpg" class="h-40 w-40 mb-3 rounded-full object-cover">
+                    <p><strong>{{ user.name }}</strong></p>
+                    <div class="mt-3 flex space-x-8 justify-around">
+                        <p class="text-xs text-gray-500">{{ followers_count }} {{ followers_count === 1 ? 'follower' :
+                            'followers' }}</p>
+                        <p class="text-xs text-gray-500">{{ following_count }} following</p>
+                        <p class="text-xs text-gray-500">{{ posts.length }} {{ posts.length === 1 ? 'post' : 'posts' }}</p>
+                    </div>
+                    <p class="text-xs text-500 mt-4">Biography</p>
+
+                    <ul
+                        class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:border-gray-700 dark:text-gray-400 mt-5">
+                        <li class="me-2">
+                            <a href="#" aria-current="page"
+                                class="inline-block p-4 text-[#a9c191] rounded-t-lg dark:text-blue-500">Feed</a>
+                        </li>
+                        <li class="me-2">
+                            <a href="#"
+                                class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-[#bfdaa4] dark:hover:text-gray-300">Gallery</a>
+                        </li>
+                        <li class="me-2">
+                            <a href="#"
+                                class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-[#bfdaa4] dark:hover:text-gray-300">Portfolio</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Post Container -->
@@ -123,6 +137,9 @@ export default {
             user: {},
             body: '',
             showAddPostModal: false,
+            isFollowing: false,
+            followers_count: 0,
+            following_count: 0
         }
     },
     watch: {
@@ -130,12 +147,14 @@ export default {
         '$route.params.id': {
             handler(newId) {
                 this.getFeed();
+                this.checkFollowStatus();
             },
-            immediate: true 
+            immediate: true
         }
     },
     mounted() {
         this.getFeed()
+        this.checkFollowStatus();
     },
 
     methods: {
@@ -146,10 +165,65 @@ export default {
                     console.log('data', response.data)
                     this.posts = response.data.posts
                     this.user = response.data.user
+                    this.getFollowerStats();
                 })
                 .catch(error => {
                     console.log('error', error)
                 })
+        },
+
+        getFollowerStats() {
+            axios
+                .get(`/api/followers/stats/${this.$route.params.id}/`)
+                .then(response => {
+                    this.followers_count = response.data.followers_count;
+                    this.following_count = response.data.following_count;
+                })
+                .catch(error => {
+                    console.log('Error getting follower stats', error);
+                });
+        },
+
+        checkFollowStatus() {
+            //only check if viewing other users profile
+            if (!this.userStore.user.id || this.userStore.user.id === this.$route.params.id) {
+                return;
+            }
+
+            axios
+                .get(`/api/followers/check/${this.$route.params.id}/`)
+                .then(response => {
+                    this.isFollowing = response.data.is_following;
+                })
+                .catch(error => {
+                    console.log('Error checking follow status:', error);
+                });
+        },
+
+        toggleFollow() {
+            if (this.isFollowing) {
+                //unfollow
+                axios
+                    .post(`/api/followers/unfollow/${this.$route.params.id}/`)
+                    .then(response => {
+                        this.isFollowing = false;
+                        this.followers_count -= 1;
+                    })
+                    .catch(error => {
+                        console.log('Error unfollowing:', error)
+                    });
+            } else {
+                //follow
+                axios
+                    .post(`/api/followers/follow/${this.$route.params.id}/`)
+                    .then(response => {
+                        this.isFollowing = true;
+                        this.followers_count += 1;
+                    })
+                    .catch(error => {
+                        console.log('Error following', error);
+                    });
+            }
         },
 
         submitForm() {

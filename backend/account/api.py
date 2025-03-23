@@ -2,6 +2,8 @@ from django.http import JsonResponse
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
+from .models import User, Follow
+
 from .forms import SignupForm
 
 
@@ -18,6 +20,7 @@ def me(request):
 @authentication_classes([])
 @permission_classes([])
 def signup(request):
+    """signup data"""
     data = request.data
     message = 'success'
 
@@ -36,3 +39,65 @@ def signup(request):
         message = 'error'
 
     return JsonResponse({'message': message})
+
+
+@api_view(['GET'])
+def follower_stats(request, user_id):
+    """get follower and following counts for a user"""
+    try:
+        user = User.objects.get(id=user_id)
+        
+        return JsonResponse({
+            'followers_count': user.get_followers_count(),
+            'following_count': user.get_following_count()
+        })
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+@api_view(['GET'])
+def check_follow_status(request, user_id):
+    """check if current user is following another user"""
+    try:
+        user_to_check = User.objects.get(id=user_id)
+        is_following = request.user.is_following(user_to_check)
+        
+        return JsonResponse({
+            'is_following': is_following
+        })
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+@api_view(['POST'])
+def follow_user(request, user_id):
+    """follow user"""
+    try:
+        user_to_follow = User.objects.get(id=user_id)
+        
+        # check if trying to follow self
+        if request.user.id == user_to_follow.id:
+            return JsonResponse({'error': 'You cannot follow yourself'}, status=400)
+        
+        request.user.follow(user_to_follow)
+        
+        return JsonResponse({
+            'success': 'You are now following this user'
+        })
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+@api_view(['POST'])
+def unfollow_user(request, user_id):
+    """unfolow user"""
+    try:
+        user_to_unfollow = User.objects.get(id=user_id)
+        
+        if not request.user.is_following(user_to_unfollow):
+            return JsonResponse({'error': 'You are not following this user'}, status=400)
+        
+        request.user.unfollow(user_to_unfollow)
+        
+        return JsonResponse({
+            'success': 'You have unfollowed this user'
+        })
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
