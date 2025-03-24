@@ -3,12 +3,16 @@
     <div class="max-w-7xl mx-auto">
       <div class="flex items-center justify-between">
         <div class="menu-left">
-          <a href="#" class="text-xl">Pixelo</a>
+          <div class="flex items-center">
+            <img src="./assets/logo.png" class="h-10 w-10 rounded-full object-cover mr-2">
+            <a href="#" class="text-xl">Pixelo</a>
+          </div>
         </div>
+
 
         <div class="menu-center flex space-x-12" v-if="userStore.user.isAuthenticated">
           <div class="feed-icon">
-            <RouterLink :to="{'name':'feed'}">
+            <RouterLink :to="{ 'name': 'feed' }">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="black"
                 class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
