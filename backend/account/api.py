@@ -102,6 +102,7 @@ def unfollow_user(request, user_id):
         return JsonResponse({'error': 'User not found'}, status=404)
     
 
+
 @api_view(['POST'])
 def logout(request):
     return JsonResponse({'message': 'success'})

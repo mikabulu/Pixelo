@@ -12,17 +12,20 @@
                 </form>
             </div>
             <!--Users -->
-            <div class="p-4 bg-[#bfdaa4] border border-gray-200 rounded-lg grid grid-cols-4 gap-4 h-72 overflow-auto" v-if="users.length">
+            <div class="p-4 bg-[#bfdaa4] border border-gray-200 rounded-lg grid grid-cols-4 gap-4 h-72 overflow-auto"
+                v-if="users.length">
                 <div class="w-full min-h-64 bg-white rounded-lg shadow-md pt-6 flex flex-col items-center justify-center"
                     v-for="user in users" v-bind:key="user.id">
                     <img src="../assets/charlie.jpg" class="h-40 w-40 mb-3 rounded-full object-cover">
                     <!--send to user profile when name clicked -->
                     <p><strong>
-                        <RouterLink :to="{ name: 'profiles', params: { 'id': user.id } }">{{ user.name }}</RouterLink>
-                    </strong></p>
+                            <RouterLink :to="{ name: 'profiles', params: { 'id': user.id } }">{{ user.name }}</RouterLink>
+                        </strong></p>
                     <div class="my-6 flex space-x-8 justify-around">
-                        <p class="text-xs text-gray-500">X friends</p>
-                        <p class="text-xs text-gray-500">X posts</p>
+                        <p class="text-xs text-gray-500">{{ user.followers_count || 0 }} {{ user.followers_count === 1 ?
+                            'follower' : 'followers' }}</p>
+                        <p class="text-xs text-gray-500">{{ user.posts_count || 0 }} {{ user.posts_count === 1 ?
+                            'post' : 'posts' }}</p>
                     </div>
                 </div>
             </div>
@@ -35,10 +38,11 @@
                     <div class="flex items-center space-x-3">
                         <img src="../assets/charlie.jpg" class="w-[40px] rounded-full">
 
-                        
+
                         <p><strong>
-                            <RouterLink :to="{ name: 'profiles', params: { 'id': post.created_by.id } }">{{ post.created_by.name }}</RouterLink>
-                        </strong></p>
+                                <RouterLink :to="{ name: 'profiles', params: { 'id': post.created_by.id } }">{{
+                                    post.created_by.name }}</RouterLink>
+                            </strong></p>
                     </div>
                     <p class="text-gray-600">{{ post.created_at_formatted }} ago</p>
                 </div>

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user'  
 import HomeView from '../views/HomeView.vue'
-import ProfileView from '../views/ProfileView.vue'
+import FeedView from '../views/FeedView.vue'
 import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
 import ExploreView from '../views/ExploreView.vue'
@@ -21,12 +21,6 @@ const routes = [
     meta: { requiresAuth: false }
   },  
   {
-    path: '/profile',
-    name: 'profile',
-    component: ProfileView,
-    meta: { requiresAuth: true }
-  },
-  {
     path: '/signup',
     name: 'signup',
     component: SignupView,
@@ -42,6 +36,12 @@ const routes = [
     path: '/profiles/:id',
     name: 'profiles',
     component: ProfilesView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/feed',
+    name: 'feed',
+    component: FeedView,
     meta: { requiresAuth: true }
   },
   {
@@ -66,7 +66,7 @@ router.beforeEach((to, from, next) => {
   
   // if route requires auth and user is not authenticated
   if (to.meta.requiresAuth && !userStore.user.isAuthenticated) {
-    next({ name: 'login' })
+    next({ name: 'login' }) //if authenticated redirect to profile page 
   } else if (userStore.user.isAuthenticated && (to.name === 'login')) {
     next({ name: 'profiles', params: { id: userStore.user.id } })
   }

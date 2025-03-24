@@ -10,9 +10,11 @@ def search(request):
     data = request.data
     query = data['query']
 
+    #search for users
     users = User.objects.filter(name__icontains=query)
     users_serializer = UserSerializer(users, many=True)
 
+    #search for posts
     posts = Post.objects.filter(body__icontains=query) #probably will remove searching posts 
     posts_serializer = PostSerializer(posts, many=True)
     return JsonResponse({
