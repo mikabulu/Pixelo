@@ -1,7 +1,8 @@
 <template>
     <div class="flex items-center justify-center bg-gray-100">
         <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-            <h1 class="text-2xl font-bold text-center mb-8">Sign in to your account</h1>
+            <img src="../assets/logo.png" class="block mx-auto mb-6 h-60">
+            <h1 class="text-2xl font-bold text-center mb-8">Sign in to Pixelo</h1>
 
             <form class="space-y-6" v-on:submit.prevent="submitForm">
                 <div>

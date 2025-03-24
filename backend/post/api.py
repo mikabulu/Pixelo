@@ -36,3 +36,27 @@ def post_create(request):
         return JsonResponse(serializer.data, safe=False)
     else:
         return JsonResponse({'error': 'error'}) 
+    
+@api_view(['GET'])
+def feed(request):
+    """
+    Get posts from users the current user is following
+    """
+    try:
+        # get users followed 
+        following_users = request.user.get_following()
+        
+        # If not following anyone, return empty list
+        if following_users.count() == 0:
+            print("User is not following anyone")
+            return JsonResponse([], safe=False)
+        
+        posts = Post.objects.filter(created_by__in=following_users)
+        
+        # Serialize the posts
+        serializer = PostSerializer(posts, many=True)
+        
+        return JsonResponse(serializer.data, safe=False)
+    
+    except Exception as e:
+        return JsonResponse([], safe=False)
