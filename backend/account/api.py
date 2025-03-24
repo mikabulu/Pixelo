@@ -1,7 +1,6 @@
 from django.http import JsonResponse
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-
 from .models import User, Follow
 
 from .forms import SignupForm
@@ -101,3 +100,8 @@ def unfollow_user(request, user_id):
         })
     except User.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
+    
+
+@api_view(['POST'])
+def logout(request):
+    return JsonResponse({'message': 'success'})

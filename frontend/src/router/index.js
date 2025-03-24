@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/user'  
 import HomeView from '../views/HomeView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import SignupView from '../views/SignupView.vue'
@@ -6,48 +7,72 @@ import LoginView from '../views/LoginView.vue'
 import ExploreView from '../views/ExploreView.vue'
 import ProfilesView from '../views/ProfilesView.vue'
 
+const routes = [  
+  {
+    path: '/',
+    name: 'home',
+    component: HomeView,
+    meta: { requiresAuth: true } //authorised access only 
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView,
+    meta: { requiresAuth: false }
+  },  
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: SignupView,
+    meta: { requiresAuth: false } 
+  },
+  {
+    path: '/explore',
+    name: 'explore',
+    component: ExploreView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profiles/:id',
+    name: 'profiles',
+    component: ProfilesView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import('../views/AboutView.vue'),
+    meta: { requiresAuth: true }  
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: { name: 'login' }
+  }
+]
+
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: LoginView
-    },
-    {
-      path: '/profile',
-      name: 'profile',
-      component: ProfileView
-    },
-    {
-      path: '/signup',
-      name: 'signup',
-      component: SignupView
-    },
-    {
-      path: '/explore',
-      name: 'explore',
-      component: ExploreView
-    },
-    {
-      path: '/profiles/:id',
-      name: 'profiles',
-      component: ProfilesView
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
-  ],
+  history: createWebHistory(import.meta.env.BASE_URL),  
+  routes
+})
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
+  
+  // if route requires auth and user is not authenticated
+  if (to.meta.requiresAuth && !userStore.user.isAuthenticated) {
+    next({ name: 'login' })
+  } else if (userStore.user.isAuthenticated && (to.name === 'login')) {
+    next({ name: 'profiles', params: { id: userStore.user.id } })
+  }
+  else{
+    next()
+  }
 })
 
 export default router
