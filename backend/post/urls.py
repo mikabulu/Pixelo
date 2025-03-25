@@ -7,4 +7,5 @@ urlpatterns = [
     path('create/', api.post_create, name='post_create'),
     path('feed/', api.feed, name='feed'),
     path('<uuid:pk>/like/', api.post_like, name='post_like'),
+    path('<uuid:pk>/is_liked/', api.post_is_liked, name='post_is_liked'),
 ]

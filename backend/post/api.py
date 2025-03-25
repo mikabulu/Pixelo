@@ -64,16 +64,30 @@ def feed(request):
 @api_view(['POST'])
 def post_like(request, pk):
     post = Post.objects.get(pk=pk)
-
-    if not post.likes.filter(created_by=request.user).exists():
+    
+    # checks if already liked 
+    existing_like = post.likes.filter(created_by=request.user).first()
+    
+    if existing_like:
+        # unlike - remove like 
+        post.likes.remove(existing_like)
+        existing_like.delete()
+        post.likes_count = post.likes_count - 1
+        post.save()
+        return JsonResponse({'message': 'unliked'})
+    else:
+        # like - add like 
         like = Like.objects.create(created_by=request.user)
-        post = Post.objects.get(pk=pk)
         post.likes_count = post.likes_count + 1
         post.likes.add(like)
         post.save()
         return JsonResponse({'message': 'liked'})
-    else:
-        return JsonResponse({'message': 'already liked'})
-
     
-    
+@api_view(['GET'])
+def post_is_liked(request, pk):
+    try:
+        post = Post.objects.get(pk=pk)
+        is_liked = post.likes.filter(created_by=request.user).exists()
+        return JsonResponse({'is_liked': is_liked})
+    except Exception as e:
+        return JsonResponse({'error': e})
