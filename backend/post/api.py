@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from .serializers import PostSerializer
-from .models import Post
+from .models import Post, Like
 from .forms import PostForm
 from rest_framework.decorators import api_view
 from account.models import User
@@ -60,3 +60,20 @@ def feed(request):
     
     except Exception as e:
         return JsonResponse([], safe=False)
+    
+@api_view(['POST'])
+def post_like(request, pk):
+    post = Post.objects.get(pk=pk)
+
+    if not post.likes.filter(created_by=request.user).exists():
+        like = Like.objects.create(created_by=request.user)
+        post = Post.objects.get(pk=pk)
+        post.likes_count = post.likes_count + 1
+        post.likes.add(like)
+        post.save()
+        return JsonResponse({'message': 'liked'})
+    else:
+        return JsonResponse({'message': 'already liked'})
+
+    
+    
