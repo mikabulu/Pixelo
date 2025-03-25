@@ -6,6 +6,7 @@ import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
 import ExploreView from '../views/ExploreView.vue'
 import ProfilesView from '../views/ProfilesView.vue'
+import PostView from '../views/PostView.vue'
 
 const routes = [  
   {
@@ -42,6 +43,12 @@ const routes = [
     path: '/feed',
     name: 'feed',
     component: FeedView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/:id',
+    name: 'postview', 
+    component: PostView,
     meta: { requiresAuth: true }
   },
   {

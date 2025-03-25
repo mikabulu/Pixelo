@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from .serializers import PostSerializer
+from .serializers import PostSerializer, PostDetailSerializer
 from .models import Post, Like
 from .forms import PostForm
 from rest_framework.decorators import api_view
@@ -91,3 +91,10 @@ def post_is_liked(request, pk):
         return JsonResponse({'is_liked': is_liked})
     except Exception as e:
         return JsonResponse({'error': e})
+
+@api_view(['GET'])
+def post_detail(request, pk):
+    post = Post.objects.get(pk=pk)
+    return JsonResponse({
+        'post': PostDetailSerializer(post).data
+    })
