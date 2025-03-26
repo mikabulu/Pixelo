@@ -1,6 +1,6 @@
 from django.http import JsonResponse
-from .serializers import PostSerializer, PostDetailSerializer
-from .models import Post, Like
+from .serializers import PostSerializer, PostDetailSerializer, CommentSerializer
+from .models import Post, Like, Comment
 from .forms import PostForm
 from rest_framework.decorators import api_view
 from account.models import User
@@ -98,3 +98,16 @@ def post_detail(request, pk):
     return JsonResponse({
         'post': PostDetailSerializer(post).data
     })
+
+@api_view(['POST'])
+def post_comment(request, pk):
+    comment = Comment.objects.create(body=request.data.get('body'), created_by=request.user)
+
+    post = Post.objects.get(pk=pk)
+    post.comments.add(comment)
+    post.comments_count = post.comments_count + 1
+    post.save()
+
+    serializer = CommentSerializer(comment)
+
+    return JsonResponse(serializer.data, safe=False)

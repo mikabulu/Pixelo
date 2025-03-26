@@ -14,6 +14,9 @@ class Comment(models.Model):
     body = models.TextField(blank=True, null = True)
     created_by = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE) #when delete user, delete all likes
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('created_at',) #order comments by most recent first
     def created_at_formatted(self):
         return timesince(self.created_at)
 

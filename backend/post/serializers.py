@@ -8,7 +8,7 @@ class PostSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
     class Meta:
         model = Post
-        fields = ('id', 'body', 'created_by', 'created_at_formatted','likes_count')
+        fields = ('id', 'body', 'created_by', 'created_at_formatted','likes_count', 'comments_count')
 
 class CommentSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
@@ -21,6 +21,6 @@ class PostDetailSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     class Meta:
         model = Post
-        fields = ('id', 'body', 'created_by', 'created_at_formatted','likes_count', 'comments') 
+        fields = ('id', 'body', 'created_by', 'created_at_formatted','likes_count', 'comments', 'comments_count') 
 
         
