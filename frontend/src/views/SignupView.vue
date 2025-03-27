@@ -26,9 +26,10 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
                 </div>
 
-            <template v-if="errors">
-                <div class> <p v-for="error in errors" v-bind:key="error">{{ error }}</p></div>
-            </template>
+                <!-- Error display section -->
+                <div v-if="errors.length" class="bg-red-50 text-red-500 p-3 rounded-md">
+                    <p v-for="error in errors" v-bind:key="error">{{ error }}</p>
+                </div>
 
                 <button
                     class="w-full bg-[#bfdaa4] text-black py-2 px-4 rounded-md hover:bg-[#a9c191] focus:outline-none focus:ring-2 focus:ring-black">
@@ -37,7 +38,8 @@
 
                 <p class="text-center text-sm text-gray-600">
                     Already have an account?
-                    <RouterLink :to="{'name': 'login'}" class="text-black hover:text-[#bfdaa4] font-medium">Login</RouterLink>
+                    <RouterLink :to="{ 'name': 'login' }" class="text-black hover:text-[#bfdaa4] font-medium">Login
+                    </RouterLink>
                 </p>
             </form>
         </div>
@@ -46,66 +48,68 @@
 
 <script>
 import axios from 'axios'
-import {useToastStore } from '../stores/toast'
 
 export default {
-    setup(){
-        const toastStore = useToastStore()
-
-        return{
-            toastStore
-        }
-    },
-
-    data(){
-        return{
+    data() {
+        return {
             form: {
                 email: '',
-                name:'',
+                name: '',
                 password1: '',
                 password2: ''
             },
-            errors: [],
+            errors: []
         }
     },
 
-    methods:{
-        submitForm(){
+    methods: {
+        submitForm() {
             this.errors = []
 
-            if (this.form.name===''){
+            if (this.form.name === '') {
                 this.errors.push('Please input name')
             }
-            if (this.form.email===''){
+            if (this.form.email === '') {
                 this.errors.push('Please input email')
             }
-            if (this.form.password1===''){
+            if (this.form.password1 === '') {
                 this.errors.push('Please input password')
             }
-            if (this.form.password1 !== this.form.password2){
+            if (this.form.password1 !== this.form.password2) {
                 this.errors.push('Passwords do not match')
             }
 
-            if (this.errors.length === 0 ){
+            if (this.errors.length === 0) {
                 axios
-                .post('/api/signup/', this.form)
-                .then(response => {
-                    if (response.data.message === 'success'){
-                        this.toastStore.showToast(5000, 'Success! Please log in')
+                    .post('/api/signup/', this.form)
+                    .then(response => {
+                        if (response.data.message === 'success') {
+                            //resets form 
+                            this.form.name = ''
+                            this.form.email = ''
+                            this.form.password1 = ''
+                            this.form.password2 = ''
 
-                        //resets form 
-                        this.form.name=''
-                        this.form.email=''
-                        this.form.password1=''
-                        this.form.password2=''
-
-                    } else{
-                        this.toastStore.showToast(5000, 'Something went wrong. Please try again')
-                    }
-                })
-                .catch(error => {
-                    console.log('error', error)
-                })
+                            this.$router.push({ name: 'login' })
+                        } else {
+                            if (response.data.errors) {
+                                // process each field's errors
+                                for (const field in response.data.errors) {
+                                    const errors = response.data.errors[field];
+                                    // returns arrays of errors for each field
+                                    errors.forEach(error => {
+                                        this.errors.push(error);
+                                    });
+                                }
+                            } else {
+                                this.errors.push('Something went wrong. Please try again')
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.log('error', error)
+                        this.errors.push('An error occurred during signup')
+                    })
             }
         }
     }

@@ -19,7 +19,7 @@
 
                 <template v-if="errors">
                     <div class>
-                        <p v-for="error in errors" v-bind:key="error">{{ error }}</p>
+                        <p v-for="error in errors" v-bind:key="error">{{ error }}ERROR!</p>
                     </div>
                 </template>
 

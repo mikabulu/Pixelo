@@ -21,23 +21,23 @@ def me(request):
 def signup(request):
     """signup data"""
     data = request.data
-    message = 'success'
-
+    
     form = SignupForm({
         'email': data.get('email'),
         'name': data.get('name'),
         'password1': data.get('password1'),
         'password2': data.get('password2'),
     })
-
+    
     if form.is_valid():
         form.save()
-
-        # Send verification email later
+        return JsonResponse({'message': 'success'})
     else:
-        message = 'error'
-
-    return JsonResponse({'message': message})
+        # return to frontend 
+        return JsonResponse({
+            'message': 'error',
+            'errors': dict(form.errors.items()) 
+        })
 
 
 @api_view(['GET'])
