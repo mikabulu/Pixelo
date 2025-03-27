@@ -11,10 +11,12 @@
                     <button class="inline-block py-4 px-6 bg-[#bfdaa4] text-black rounded-lg">Search</button>
                 </form>
             </div>
+            <!--Trends Bar -->
+            <TrendsComponent/>
             <!--Users -->
             <div class="p-4 bg-[#bfdaa4] border border-gray-200 rounded-lg grid grid-cols-4 gap-4 h-72 overflow-auto"
                 v-if="users.length">
-                <div class="w-full min-h-64 bg-white rounded-lg shadow-md pt-6 flex flex-col items-center justify-center"
+                <div class="w-full min-h-64  bg-white rounded-lg shadow-md pt-6 flex flex-col items-center justify-center"
                     v-for="user in users" v-bind:key="user.id">
                     <img src="../assets/charlie.jpg" class="h-40 w-40 mb-3 rounded-full object-cover">
                     <!--send to user profile when name clicked -->
@@ -39,12 +41,14 @@
 <script>
 import axios from 'axios'
 import PostComponent from '@/components/PostComponent.vue'
+import TrendsComponent from '@/components/TrendsComponent.vue'
 
 export default {
     name: 'ExploreView',
 
     components: {
-        PostComponent
+        PostComponent,
+        TrendsComponent
     },
 
     data() {

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useUserStore } from '@/stores/user'  
+import { useUserStore } from '@/stores/user'
 import HomeView from '../views/HomeView.vue'
 import FeedView from '../views/FeedView.vue'
 import SignupView from '../views/SignupView.vue'
@@ -7,8 +7,9 @@ import LoginView from '../views/LoginView.vue'
 import ExploreView from '../views/ExploreView.vue'
 import ProfilesView from '../views/ProfilesView.vue'
 import PostView from '../views/PostView.vue'
+import HashtagView from '../views/HashtagView.vue'
 
-const routes = [  
+const routes = [
   {
     path: '/',
     name: 'home',
@@ -20,12 +21,12 @@ const routes = [
     name: 'login',
     component: LoginView,
     meta: { requiresAuth: false }
-  },  
+  },
   {
     path: '/signup',
     name: 'signup',
     component: SignupView,
-    meta: { requiresAuth: false } 
+    meta: { requiresAuth: false }
   },
   {
     path: '/explore',
@@ -47,15 +48,21 @@ const routes = [
   },
   {
     path: '/:id',
-    name: 'postview', 
+    name: 'postview',
     component: PostView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/hashtags/:id',
+    name: 'hashtagview',
+    component: HashtagView,
     meta: { requiresAuth: true }
   },
   {
     path: '/about',
     name: 'about',
     component: () => import('../views/AboutView.vue'),
-    meta: { requiresAuth: true }  
+    meta: { requiresAuth: true }
   },
   {
     path: '/:pathMatch(.*)*',
@@ -64,20 +71,20 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),  
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
-  
+
   // if route requires auth and user is not authenticated
   if (to.meta.requiresAuth && !userStore.user.isAuthenticated) {
     next({ name: 'login' }) //if authenticated redirect to profile page 
   } else if (userStore.user.isAuthenticated && (to.name === 'login')) {
     next({ name: 'profiles', params: { id: userStore.user.id } })
   }
-  else{
+  else {
     next()
   }
 })

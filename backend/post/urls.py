@@ -10,5 +10,6 @@ urlpatterns = [
     path('<uuid:pk>/is_liked/', api.post_is_liked, name='post_is_liked'),
     path('<uuid:pk>/', api.post_detail, name='post_detail'),
     path('<uuid:pk>/comment/', api.post_comment, name='post_comment'),
+    path('trends/', api.get_trends, name='get_trends'),
     
 ] 

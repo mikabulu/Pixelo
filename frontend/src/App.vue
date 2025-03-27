@@ -48,8 +48,6 @@
   <main class="px-8 py-8">
     <RouterView />
   </main>
-
-  <Toast />
 </template>
 
 <style>
@@ -72,7 +70,6 @@ main {
 
 <script>
 import axios from 'axios'
-import Toast from '@/components/Toast.vue'
 import { useUserStore } from '@/stores/user'
 
 export default {
@@ -82,9 +79,6 @@ export default {
     return {
       userStore
     }
-  },
-  components: {
-    Toast
   },
 
   beforeCreate() {
