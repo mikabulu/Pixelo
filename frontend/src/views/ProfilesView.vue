@@ -25,6 +25,10 @@
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#e8f2d7] cursor-pointer">
                                 Edit Profile
                             </RouterLink>
+                            <RouterLink to="/profile/editpassword"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#e8f2d7] cursor-pointer">
+                                Change Password
+                            </RouterLink>
                             <div @click="logout"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#e8f2d7] cursor-pointer">
                                 Logout

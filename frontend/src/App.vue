@@ -80,7 +80,6 @@ export default {
       userStore
     }
   },
-
   beforeCreate() {
     this.userStore.initStore()
 
@@ -93,7 +92,7 @@ export default {
     }
   },
   mounted() {
-    // fetch user dasta when component mounted
+    // fetch user data when component mounted
     if (this.userStore.user.isAuthenticated) {
       axios
         .get('/api/me/')

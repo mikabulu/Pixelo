@@ -9,6 +9,7 @@ import ProfilesView from '../views/ProfilesView.vue'
 import PostView from '../views/PostView.vue'
 import HashtagView from '../views/HashtagView.vue'
 import EditProfileView from '../views/EditProfileView.vue'
+import EditPasswordView from '../views/EditPasswordView.vue'
 
 const routes = [
   {
@@ -45,6 +46,12 @@ const routes = [
     path: '/profile/edit',
     name: 'editprofile',
     component: EditProfileView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile/editpassword',
+    name: 'editpassword',
+    component: EditPasswordView,
     meta: { requiresAuth: true }
   },
   {

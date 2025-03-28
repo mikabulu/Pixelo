@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-
+from django.contrib.auth.forms import PasswordChangeForm
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from .models import User, Follow
 
@@ -121,5 +121,15 @@ def edit_profile(request):
         if form.is_valid():
             form.save()
         return JsonResponse({'message': 'information updated'})
+    
+@api_view(['POST'])
+def edit_password(request):
+    user = request.user
+    form = PasswordChangeForm(data = request.POST, user = user)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'message': 'password updated'})
+    else:
+        return JsonResponse({'message': form.errors.as_json()}, safe=False)
     
     
