@@ -12,6 +12,7 @@ def me(request):
         'id': request.user.id,
         'name': request.user.name,
         'email': request.user.email,
+        'avatar': request.user.get_avatar()
     })
 
 
@@ -114,7 +115,9 @@ def edit_profile(request):
     if User.objects.filter(email=request.data.get('email')).exclude(id=user.id).exists():
         return JsonResponse({'message': 'email already exists'})
     else: 
-        form = ProfileForm(request.data, instance=user)
+        print(request.FILES)
+        print(request.POST)
+        form = ProfileForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
         return JsonResponse({'message': 'information updated'})

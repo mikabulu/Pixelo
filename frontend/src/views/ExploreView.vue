@@ -18,7 +18,7 @@
                 v-if="users.length">
                 <div class="w-full min-h-64  bg-white rounded-lg shadow-md pt-6 flex flex-col items-center justify-center"
                     v-for="user in users" v-bind:key="user.id">
-                    <img src="../assets/charlie.jpg" class="h-40 w-40 mb-3 rounded-full object-cover">
+                    <img :src="user.get_avatar" class="h-40 w-40 mb-3 rounded-full object-cover">
                     <!--send to user profile when name clicked -->
                     <p><strong>
                             <RouterLink :to="{ name: 'profiles', params: { 'id': user.id } }">{{ user.name }}</RouterLink>

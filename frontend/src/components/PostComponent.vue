@@ -4,7 +4,7 @@
     <!-- Post Header -->
     <div class="mb-6 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <img src="../assets/charlie.jpg" class="w-[40px] rounded-full">
+        <img :src="post.created_by.get_avatar" class="w-[40px] rounded-full">
         <p><strong>
             <RouterLink :to="{ name: 'profiles', params: { 'id': post.created_by.id } }">
               {{ post.created_by.name }}

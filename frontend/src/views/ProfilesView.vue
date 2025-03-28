@@ -48,7 +48,7 @@
                 </button>
 
                 <div class="flex flex-col items-center justify-center">
-                    <img src="../assets/charlie.jpg" class="h-40 w-40 mb-3 rounded-full object-cover">
+                    <img :src="user.get_avatar" class="h-40 w-40 mb-3 rounded-full object-cover">
                     <p><strong>{{ user.name }}</strong></p>
                     <div class="mt-3 flex space-x-8 justify-around">
                         <p class="text-xs text-gray-500">{{ followers_count }} {{ followers_count === 1 ? 'follower' :
@@ -179,7 +179,7 @@ export default {
                     console.log('data', response.data)
                     this.posts = response.data.posts
                     this.user = response.data.user
-                    this.getFollowerStats();
+                    this.getFollowerStats();      
                 })
                 .catch(error => {
                     console.log('error', error)

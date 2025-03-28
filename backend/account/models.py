@@ -72,6 +72,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_following(self): #get all following
         return User.objects.filter(followers__follower=self)
     
+    def get_avatar(self):
+        if self.avatar:
+            return 'http://127.0.0.1:8000' + self.avatar.url
+        else:
+            return ''
+    
 class Follow(models.Model):
     id = models.UUIDField(primary_key = True, default=uuid.uuid4, editable=False)
     follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
