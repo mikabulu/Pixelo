@@ -8,6 +8,7 @@ import ExploreView from '../views/ExploreView.vue'
 import ProfilesView from '../views/ProfilesView.vue'
 import PostView from '../views/PostView.vue'
 import HashtagView from '../views/HashtagView.vue'
+import EditProfileView from '../views/EditProfileView.vue'
 
 const routes = [
   {
@@ -38,6 +39,12 @@ const routes = [
     path: '/profiles/:id',
     name: 'profiles',
     component: ProfilesView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile/edit',
+    name: 'editprofile',
+    component: EditProfileView,
     meta: { requiresAuth: true }
   },
   {

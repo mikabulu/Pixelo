@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from .models import User, Follow
 
-from .forms import SignupForm
+from .forms import SignupForm, ProfileForm
 
 
 @api_view(['GET'])
@@ -106,3 +106,17 @@ def unfollow_user(request, user_id):
 @api_view(['POST'])
 def logout(request):
     return JsonResponse({'message': 'success'})
+
+@api_view(['POST'])
+def edit_profile(request):
+    user = request.user
+    email = request.data.get('email')
+    if User.objects.filter(email=request.data.get('email')).exclude(id=user.id).exists():
+        return JsonResponse({'message': 'email already exists'})
+    else: 
+        form = ProfileForm(request.data, instance=user)
+        if form.is_valid():
+            form.save()
+        return JsonResponse({'message': 'information updated'})
+    
+    

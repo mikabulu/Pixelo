@@ -13,4 +13,5 @@ urlpatterns = [
     path('followers/check/<uuid:user_id>/', api.check_follow_status, name='check_follow_status'),
     path('followers/follow/<uuid:user_id>/', api.follow_user, name='follow_user'),
     path('followers/unfollow/<uuid:user_id>/', api.unfollow_user, name='unfollow_user'),
+    path('editprofile/', api.edit_profile, name='edit_profile'),
 ]
