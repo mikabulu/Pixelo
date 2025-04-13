@@ -1,7 +1,11 @@
 from django.db import models
 import uuid 
+import subprocess
+import os 
 from account.models import User
 from django.utils.timesince import timesince
+from django.conf import settings
+
 
 
 class Like(models.Model):
@@ -31,6 +35,23 @@ class PostAttachment(models.Model):
             return 'http://127.0.0.1:8000' + self.image.url
         else:
             return ''
+        
+    #loop gifs - even if they have loop count 1 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # save file first 
+
+        file_path = self.image.path
+        if file_path.lower().endswith('.gif'):
+            temp_path = file_path.replace('.gif', '_looped.gif')
+            try:
+                subprocess.run(
+                    ['convert', file_path, '-loop', '0', temp_path], #loop infintely 
+                    check=True
+                )
+                os.replace(temp_path, file_path)  # replace original gif with looped version 
+            except Exception as e:
+                print(f'Error processing GIF to loop: {e}')
+
     
 
 
