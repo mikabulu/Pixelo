@@ -79,7 +79,7 @@
                     </ul>
                 </div>
             </div>
-            
+
             <!-- Posts  -->
             <PostComponent v-for="post in posts" :key="post.id" :post="post" />
         </div>
@@ -93,19 +93,29 @@
                 <button @click="showAddPostModal = false" class="text-gray-500 hover:text-gray-700">✕</button>
             </div>
             <form v-on:submit.prevent="submitFormAndClose" method="post">
+                <div id="preview" v-if="url" class="mx-5 mt-5">
+                    <img :src="url" />
+                </div>
                 <div class="p-4">
                     <textarea v-model="body" class="p-4 w-full bg-gray-100 rounded-lg" placeholder="Add Post"></textarea>
                 </div>
-
                 <div class="p-4 border-t border-gray-100 flex justify-between">
-                    <a href="#" class="inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">Attach image</a>
-
+                    <label class="custom-file-upload inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">
+                        <input type="file" ref="file" @change="onFileChange" />
+                        Upload Image
+                    </label>
                     <button class="inline-block py-4 px-6 bg-[#bfdaa4]  text-white rounded-lg">Post</button>
                 </div>
             </form>
         </div>
     </div>
 </template>
+
+<style>
+input[type="file"] {
+    display: none;
+}
+</style>
   
 <script>
 import axios from 'axios'
@@ -134,7 +144,8 @@ export default {
             isFollowing: false,
             followers_count: 0,
             following_count: 0,
-            showSettingsMenu: false
+            showSettingsMenu: false,
+            url: null
         }
     },
     watch: {
@@ -156,6 +167,10 @@ export default {
         document.removeEventListener('click', this.closeSettingsMenuOutside);
     },
     methods: {
+        onFileChange(e) {
+            const file = e.target.files[0];
+            this.url = URL.createObjectURL(file);
+        },
         logout() {
             axios
                 .post('/api/logout/')
@@ -183,7 +198,7 @@ export default {
                     console.log('data', response.data)
                     this.posts = response.data.posts
                     this.user = response.data.user
-                    this.getFollowerStats();      
+                    this.getFollowerStats();
                 })
                 .catch(error => {
                     console.log('error', error)
@@ -246,15 +261,21 @@ export default {
 
         submitForm() {
             console.log('submitForm', this.body)
+            let formData = new FormData()
+            formData.append('image', this.$refs.file.files[0])
+            formData.append('body', this.body)
 
             axios
-                .post('/api/posts/create/', {
-                    'body': this.body
+                .post('/api/posts/create/', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 })
                 .then(response => {
                     console.log('data', response.data)
                     this.posts.unshift(response.data)
                     this.body = ''
+                    this.url=null
                 })
                 .catch(error => {
                     console.log('error', error)

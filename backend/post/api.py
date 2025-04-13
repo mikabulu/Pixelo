@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from .serializers import PostSerializer, PostDetailSerializer, CommentSerializer, TrendSerializer
 from .models import Post, Like, Comment, Trend 
-from .forms import PostForm
+from .forms import PostForm, AttachmentForm
 from rest_framework.decorators import api_view
 from account.models import User
 from account.serializers import UserSerializer
@@ -31,10 +31,22 @@ def post_list_profile(request, id):
 @api_view(['POST'])  
 def post_create(request):
     form = PostForm(request.data)
+    attachment = None
+    attachment_form = AttachmentForm(request.POST, request.FILES)
+    if attachment_form.is_valid():
+        attachment = attachment_form.save(commit=False)
+        attachment.created_by = request.user
+        attachment.save()
+
     if form.is_valid():
         post = form.save(commit=False)
         post.created_by = request.user
         post.save()
+
+        if attachment: 
+            post.attachments.add(attachment)
+
+
         serializer = PostSerializer(post)
         return JsonResponse(serializer.data, safe=False)
     else:
