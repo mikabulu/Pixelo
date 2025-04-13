@@ -16,7 +16,7 @@ class Like(models.Model):
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     body = models.TextField(blank=True, null = True)
-    created_by = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE) #when delete user, delete all likes
+    created_by = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE) #when delete user, delete all comments
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -45,14 +45,12 @@ class PostAttachment(models.Model):
             temp_path = file_path.replace('.gif', '_looped.gif')
             try:
                 subprocess.run(
-                    ['convert', file_path, '-loop', '0', temp_path], #loop infintely 
+                    ['magick', file_path, '-loop', '0', temp_path], #loop infintely 
                     check=True
                 )
                 os.replace(temp_path, file_path)  # replace original gif with looped version 
             except Exception as e:
                 print(f'Error processing GIF to loop: {e}')
-
-    
 
 
 

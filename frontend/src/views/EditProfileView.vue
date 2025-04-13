@@ -16,7 +16,10 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
-                    <input type="file" ref="file">
+                    <label class="custom-file-upload inline-block py-2 px-2 bg-gray-600 text-white rounded-lg">
+                        <input type="file" ref="file" @change="onFileChange" />
+                        Upload Image
+                    </label>
                 </div>
 
                 <!-- Error display section -->
@@ -72,7 +75,7 @@ export default {
                 formData.append('email', this.form.email)
                 console.log(formData)
                 axios
-                    .post('/api/editprofile/', formData,{
+                    .post('/api/editprofile/', formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
