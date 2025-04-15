@@ -6,6 +6,8 @@ from rest_framework.decorators import api_view
 from account.models import User
 from account.serializers import UserSerializer
 
+api_view([''])
+
 @api_view(['GET'])
 def post_list(request):
     posts = Post.objects.all()
