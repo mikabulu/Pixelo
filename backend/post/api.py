@@ -6,7 +6,14 @@ from rest_framework.decorators import api_view
 from account.models import User
 from account.serializers import UserSerializer
 
-api_view([''])
+@api_view(['DELETE'])
+def post_delete(request, pk):
+    try:
+        post = Post.objects.get(pk=pk, created_by=request.user)
+        post.delete()
+        return JsonResponse({'message': 'Post deleted successfully'})
+    except Post.DoesNotExist:
+        return JsonResponse({'error': 'Post not found or you do not have permission'}, status=403)
 
 @api_view(['GET'])
 def post_list(request):

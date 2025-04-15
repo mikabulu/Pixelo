@@ -49,8 +49,8 @@
         </div>
       </div>
 
-      <!-- Trash Icon -->
-      <div class="flex items-center">
+      <!-- Trash Icon (only for own posts)-->
+      <div class="flex items-center" @click="deletePost" v-if="post.created_by.id === userStore.user.id"> 
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="w-6 h-6 text-gray-500 hover:text-red-500 cursor-pointer">
           <path stroke-linecap="round" stroke-linejoin="round"
@@ -58,13 +58,29 @@
         </svg>
       </div>
     </div>
-
-
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirmModal" class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50">
+      <div class="bg-white border border-gray-200 rounded-lg max-w-md w-full mx-4">
+        <div class="p-6 text-center">
+          <p class="mb-6">Are you sure you want to delete this post? This cannot be undone.</p>
+          <div class="flex justify-center space-x-4">
+            <button @click="showDeleteConfirmModal = false"
+              class="py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+              Cancel
+            </button>
+            <button @click="confirmDelete" class="py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import { useUserStore } from '@/stores/user'
 
 export default {
   name: 'PostComponent',
@@ -72,10 +88,16 @@ export default {
   props: {
     post: Object
   },
-
+  setup() {
+    const userStore = useUserStore()
+    return {
+      userStore
+    }
+  },
   data() {
     return {
-      liked: false
+      liked: false,
+      showDeleteConfirmModal: false
     }
   },
 
@@ -84,6 +106,24 @@ export default {
   },
 
   methods: {
+    // delete post
+    deletePost() {
+      this.showDeleteConfirmModal = true; // show confirmation modal 
+    },
+    // Called when user confirms deletion in the modal
+    confirmDelete() {
+      console.log('Delete post:', this.post.id);
+      axios
+        .delete(`/api/posts/${this.post.id}/delete/`)
+        .then(response => {
+          console.log('Post deleted successfully', response);
+          this.$emit('postDeleted', this.post.id);
+          this.showDeleteConfirmModal = false; // Close the modal
+        })
+        .catch(error => {
+          console.log('Error deleting post', error);
+        });
+    },
     // check if post already liked 
     checkLikeStatus() {
       axios

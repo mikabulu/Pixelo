@@ -81,7 +81,7 @@
             </div>
 
             <!-- Posts  -->
-            <PostComponent v-for="post in posts" :key="post.id" :post="post" />
+            <PostComponent v-for="post in posts" :key="post.id" :post="post" @postDeleted="deletePost"/>
         </div>
     </div>
 
@@ -167,6 +167,9 @@ export default {
         document.removeEventListener('click', this.closeSettingsMenuOutside);
     },
     methods: {
+        deletePost(id){
+            this.posts = this.posts.filter(post => post.id !== id)
+        },
         onFileChange(e) {
             const file = e.target.files[0];
             this.url = URL.createObjectURL(file);
