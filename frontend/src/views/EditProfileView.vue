@@ -3,7 +3,23 @@
         <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
             <h1 class="text-2xl font-bold text-center mb-8">Edit Profile </h1>
 
+            <!-- Edit Avatar -->
             <form class="space-y-6" v-on:submit.prevent="submitForm">
+                <div class>
+                    <div v-if="imagePreviewUrl" class="mb-1">
+                        <img :src="imagePreviewUrl" alt="Avatar Preview"
+                            class="w-24 h-24 rounded-full object-cover mx-auto" />
+                    </div>
+                    <div class="justify-self-center">
+                        <label class="block text-sm font-medium text-gray-700 mb-2 justify-self-center">Avatar</label>
+                        <label class="custom-file-upload inline-block py-2 px-2 bg-gray-600 text-white rounded-lg">
+                            <input type="file" ref="file" @change="onFileChange" />
+                            Upload Image
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Form Section -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
                     <input type="text" v-model="form.name"
@@ -15,11 +31,17 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
-                    <label class="custom-file-upload inline-block py-2 px-2 bg-gray-600 text-white rounded-lg">
-                        <input type="file" ref="file" @change="onFileChange" />
-                        Upload Image
-                    </label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
+                    <select v-model="form.account_type"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
+                        <option disabled value="">Please select one</option>
+                        <option value="hobbyist">Hobbyist</option>
+                        <option value="professional">Professional</option>
+                        <option value="student">Student</option>
+                        <option value="studio">Studio</option>
+                        <option value="freelance">Freelance</option>
+                        <option value="enthusiast">Enthusiast</option>
+                    </select>
                 </div>
 
                 <!-- Error display section -->
@@ -52,12 +74,21 @@ export default {
             form: {
                 email: this.userStore.user.email,
                 name: this.userStore.user.name,
+                account_type: this.userStore.user.account_type,
+                avat: null
             },
-            errors: []
+            errors: [],
+            imagePreviewUrl: this.userStore.user.avatar || null // show current avatar if exists
         }
     },
 
     methods: {
+        onFileChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.imagePreviewUrl = URL.createObjectURL(file);
+            }
+        },
         submitForm() {
             this.errors = []
 
@@ -67,12 +98,16 @@ export default {
             if (this.form.email === '') {
                 this.errors.push('Please input email')
             }
+            if (this.form.account_type === '') {
+                this.errors.push('Please select account type')
+            }
 
             if (this.errors.length === 0) {
                 let formData = new FormData()
                 formData.append('avatar', this.$refs.file.files[0])
                 formData.append('name', this.form.name)
                 formData.append('email', this.form.email)
+                formData.append('account_type', this.form.account_type)
                 console.log(formData)
                 axios
                     .post('/api/editprofile/', formData, {
@@ -85,7 +120,7 @@ export default {
                             this.userStore.setUserInfo({
                                 id: this.userStore.user.id,
                                 name: this.form.name,
-                                email: this.form.email
+                                email: this.form.email,
                             })
                             this.$router.back() //back to profile page
                         } else {

@@ -54,6 +54,7 @@
                 <div class="flex flex-col items-center justify-center">
                     <img :src="user.get_avatar" class="h-40 w-40 mb-3 rounded-full object-cover">
                     <p><strong>{{ user.name }}</strong></p>
+                    <p class="text-gray-500 text-xs">{{ user.account_type }}</p>
                     <div class="mt-3 flex space-x-8 justify-around">
                         <p class="text-xs text-gray-500">{{ followers_count }} {{ followers_count === 1 ? 'follower' :
                             'followers' }}</p>

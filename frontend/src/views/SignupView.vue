@@ -25,6 +25,19 @@
                     <input type="password" v-model="form.password2"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
                 </div>
+                <!-- Account Type Dropdown -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
+                    <select v-model="form.account_type"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
+                        <option disabled value="">Please select one</option>
+                        <option value="hobbyist">Hobbyist</option>
+                        <option value="professional">Professional</option>
+                        <option value="student">Student</option>
+                        <option value="studio">Studio</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
 
                 <!-- Error display section -->
                 <div v-if="errors.length" class="bg-red-50 text-red-500 p-3 rounded-md">
@@ -56,7 +69,8 @@ export default {
                 email: '',
                 name: '',
                 password1: '',
-                password2: ''
+                password2: '',
+                account_type: ''
             },
             errors: []
         }
@@ -78,6 +92,10 @@ export default {
             if (this.form.password1 !== this.form.password2) {
                 this.errors.push('Passwords do not match')
             }
+            if (this.form.account_type === '') {
+                this.errors.push('Please select an account type')
+            }
+
 
             if (this.errors.length === 0) {
                 axios
