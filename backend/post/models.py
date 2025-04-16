@@ -5,6 +5,7 @@ import os
 from account.models import User
 from django.utils.timesince import timesince
 from django.conf import settings
+from cloudinary.models import CloudinaryField
 
 
 
@@ -27,31 +28,16 @@ class Comment(models.Model):
 
 class PostAttachment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    image = models.ImageField(upload_to='post_attachments')
+    image = CloudinaryField('image', folder ='post_attachments') 
     created_by = models.ForeignKey(User, related_name='post_attachments', on_delete=models.CASCADE) #when delete user, delete all posts
 
     def get_image(self):
         if self.image:
-            return 'http://127.0.0.1:8000' + self.image.url
+            return self.image.url
         else:
             return ''
-        
-    #loop gifs - even if they have loop count 1 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # save file first 
 
-        file_path = self.image.path
-        if file_path.lower().endswith('.gif'):
-            temp_path = file_path.replace('.gif', '_looped.gif')
-            try:
-                subprocess.run(
-                    ['magick', file_path, '-loop', '0', temp_path], #loop infintely 
-                    check=True
-                )
-                os.replace(temp_path, file_path)  # replace original gif with looped version 
-            except Exception as e:
-                print(f'Error processing GIF to loop: {e}')
-
+ 
 
 
 class Post(models.Model):

@@ -109,6 +109,12 @@ DATABASES = {
     }
 }
 
+cloudinary.config(
+    cloud_name = 'dk2tssauk',
+    api_key = '233696496898373',
+    api_secret = 'aOfdCiybTK5u9XdO3RNpwCMyaL0'
+)
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dk2tssauk',  
     'API_KEY': '233696496898373',       

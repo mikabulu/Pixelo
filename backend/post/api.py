@@ -41,11 +41,12 @@ def post_list_profile(request, id):
 def post_create(request):
     form = PostForm(request.data)
     attachment = None
-    attachment_form = AttachmentForm(request.POST, request.FILES)
-    if attachment_form.is_valid():
-        attachment = attachment_form.save(commit=False)
-        attachment.created_by = request.user
-        attachment.save()
+    if request.FILES:
+        attachment_form = AttachmentForm(request.POST, request.FILES)
+        if attachment_form.is_valid():
+            attachment = attachment_form.save(commit=False)
+            attachment.created_by = request.user
+            attachment.save()
 
     if form.is_valid():
         post = form.save(commit=False)
