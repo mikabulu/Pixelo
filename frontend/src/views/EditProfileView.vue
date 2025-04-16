@@ -31,10 +31,20 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
+                    <select v-model="form.account_type"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
+                        <option value="hobbyist">Hobbyist</option>
+                        <option value="professional">Professional</option>
+                        <option value="enthusiast">Enthusiast</option>
+                        <option value="studio">Studio</option>
+                        <option value="freelance">Freelance</option>
+                    </select>
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
                     <textarea v-model="form.bio" rows="4"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]"
-                        ></textarea>
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]"></textarea>
                 </div>
 
                 <!-- Error display section -->
@@ -68,6 +78,7 @@ export default {
                 email: this.userStore.user.email,
                 name: this.userStore.user.name,
                 bio: this.userStore.user.bio,
+                account_type: this.userStore.user.account_type,
 
             },
             errors: [],
@@ -99,6 +110,7 @@ export default {
                 formData.append('name', this.form.name)
                 formData.append('email', this.form.email)
                 formData.append('bio', this.form.bio)
+                formData.append('account_type', this.form.account_type)
                 console.log(formData)
                 axios
                     .post('/api/editprofile/', formData, {
@@ -113,7 +125,8 @@ export default {
                                 name: this.form.name,
                                 email: this.form.email,
                                 avatar: this.form.avatar || this.userStore.user.avatar, //keep og avatar in user store when no new avatar
-                                bio: this.form.bio
+                                bio: this.form.bio,
+                                account_type: this.form.account_type
                             })
                             this.$router.back() //back to profile page
                         } else {

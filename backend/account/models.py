@@ -33,12 +33,26 @@ class CustomUserManager(UserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    
+    ACCOUNT_TYPE_CHOICES = [
+        ('hobbyist', 'Hobbyist'),
+        ('professional', 'Professional'),
+        ('enthusiast', 'Enthusiast'),
+        ('studio', 'Studio'),
+        ('freelance', 'Freelance'),
+    ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255, blank=True, default='')
     avatar = models.ImageField(upload_to='avatars', blank=True, null=True)
     bio = models.TextField(blank=True, default='')
-
+    account_type = models.CharField(
+        max_length=20, 
+        choices=ACCOUNT_TYPE_CHOICES,
+        default='enthusiast',
+        blank=False,
+        null=False
+    )
 
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)

@@ -54,13 +54,14 @@
                 <div class="flex flex-col items-center justify-center">
                     <img :src="user.get_avatar" class="h-40 w-40 mb-3 rounded-full object-cover">
                     <p><strong>{{ user.name }}</strong></p>
-                    <div class="mt-3 flex space-x-8 justify-around">
+                    <p class = "text-xs text-gray-500">{{ user.account_type }}</p>
+                    <p class="text-xs text-500 mt-4">{{ user.bio }}</p>
+                    <div class="mt-5 flex space-x-8 justify-around">
                         <p class="text-xs text-gray-500">{{ followers_count }} {{ followers_count === 1 ? 'follower' :
                             'followers' }}</p>
                         <p class="text-xs text-gray-500">{{ following_count }} following</p>
                         <p class="text-xs text-gray-500">{{ posts.length }} {{ posts.length === 1 ? 'post' : 'posts' }}</p>
                     </div>
-                    <p class="text-xs text-500 mt-4">{{ user.bio }}</p>
 
                     <ul
                         class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:border-gray-700 dark:text-gray-400 mt-5">

@@ -12,6 +12,7 @@ export const useUserStore = defineStore('user', {
             refresh: null,
             avatar: null,
             bio: null,
+            account_type: 'enthusiast',
         }
     }),
 
@@ -29,6 +30,7 @@ export const useUserStore = defineStore('user', {
                 this.user.email = localStorage.getItem('user.email')
                 this.user.avatar = localStorage.getItem('user.avatar')
                 this.user.bio = localStorage.getItem('user.bio')
+                this.user.account_type = localStorage.getItem('user.account_type')
                 this.user.isAuthenticated = true
 
                 this.refreshToken()
@@ -61,6 +63,7 @@ export const useUserStore = defineStore('user', {
             this.user.email = null
             this.user.avatar = null
             this.user.bio = null
+            this.user.account_type = null
 
             localStorage.setItem('user.access', '')
             localStorage.setItem('user.refresh', '')
@@ -69,6 +72,7 @@ export const useUserStore = defineStore('user', {
             localStorage.setItem('user.email', '')
             localStorage.setItem('user.avatar', '')
             localStorage.setItem('user.bio', '')
+            localStorage.setItem('user.account_type', '')
         },
 
         setUserInfo(user) {
@@ -79,12 +83,14 @@ export const useUserStore = defineStore('user', {
             this.user.email = user.email
             this.user.avatar = user.avatar
             this.user.bio = user.bio
+            this.user.account_type = user.account_type
 
             localStorage.setItem('user.id', this.user.id)
             localStorage.setItem('user.name', this.user.name)
             localStorage.setItem('user.email', this.user.email)
             localStorage.setItem('user.avatar', this.user.avatar)
             localStorage.setItem('user.bio', this.user.bio)
+            localStorage.setItem('user.account_type', this.user.account_type)
 
             console.log('User', this.user)
         },
