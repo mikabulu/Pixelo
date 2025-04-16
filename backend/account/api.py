@@ -28,7 +28,6 @@ def signup(request):
         'name': data.get('name'),
         'password1': data.get('password1'),
         'password2': data.get('password2'),
-        'account_type': data.get('account_type')
     })
     
     if form.is_valid():

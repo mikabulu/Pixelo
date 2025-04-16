@@ -52,20 +52,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    ACCOUNT_TYPE_CHOICES = [
-    ('hobbyist', 'Hobbyist'),
-    ('professional', 'Professional'),
-    ('student', 'Student'),
-    ('studio', 'Studio'),
-    ('freelance', 'Freelance'),
-    ('enthusiast', 'Enthusiast'),
-    ]
-
-    account_type = models.CharField(
-    max_length=20,
-    choices=ACCOUNT_TYPE_CHOICES,
-    )
-
     def follow(self, user):
         if self != user: #don't follow yourself 
             Follow.objects.get_or_create(follower=self, followed=user)
