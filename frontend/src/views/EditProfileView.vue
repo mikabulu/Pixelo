@@ -75,7 +75,6 @@ export default {
                 email: this.userStore.user.email,
                 name: this.userStore.user.name,
                 account_type: this.userStore.user.account_type,
-                avat: null
             },
             errors: [],
             imagePreviewUrl: this.userStore.user.avatar || null // show current avatar if exists
@@ -121,6 +120,7 @@ export default {
                                 id: this.userStore.user.id,
                                 name: this.form.name,
                                 email: this.form.email,
+                                avatar: this.form.avatar || this.userStore.user.avatar //keep og avatar in user store when no new avatar
                             })
                             this.$router.back() //back to profile page
                         } else {
