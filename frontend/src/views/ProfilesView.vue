@@ -60,7 +60,7 @@
                         <p class="text-xs text-gray-500">{{ following_count }} following</p>
                         <p class="text-xs text-gray-500">{{ posts.length }} {{ posts.length === 1 ? 'post' : 'posts' }}</p>
                     </div>
-                    <p class="text-xs text-500 mt-4">Biography</p>
+                    <p class="text-xs text-500 mt-4">{{ user.bio }}</p>
 
                     <ul
                         class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:border-gray-700 dark:text-gray-400 mt-5">

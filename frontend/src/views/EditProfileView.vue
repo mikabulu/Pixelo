@@ -30,6 +30,12 @@
                     <input type="email" v-model="form.email"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                    <textarea v-model="form.bio" rows="4"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]"
+                        ></textarea>
+                </div>
 
                 <!-- Error display section -->
                 <div v-if="errors.length" class="bg-red-50 text-red-500 p-3 rounded-md">
@@ -61,7 +67,8 @@ export default {
             form: {
                 email: this.userStore.user.email,
                 name: this.userStore.user.name,
-                
+                bio: this.userStore.user.bio,
+
             },
             errors: [],
             imagePreviewUrl: this.userStore.user.avatar || null // show current avatar if exists
@@ -91,6 +98,7 @@ export default {
                 formData.append('avatar', this.$refs.file.files[0])
                 formData.append('name', this.form.name)
                 formData.append('email', this.form.email)
+                formData.append('bio', this.form.bio)
                 console.log(formData)
                 axios
                     .post('/api/editprofile/', formData, {
@@ -104,7 +112,8 @@ export default {
                                 id: this.userStore.user.id,
                                 name: this.form.name,
                                 email: this.form.email,
-                                avatar: this.form.avatar || this.userStore.user.avatar //keep og avatar in user store when no new avatar
+                                avatar: this.form.avatar || this.userStore.user.avatar, //keep og avatar in user store when no new avatar
+                                bio: this.form.bio
                             })
                             this.$router.back() //back to profile page
                         } else {
