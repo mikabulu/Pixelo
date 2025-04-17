@@ -33,12 +33,15 @@ class PostAttachment(models.Model):
 
     def get_image(self):
         if self.image:
+            if self.image.url.lower().endswith('.gif'):
+                return self.image.build_url(transformation=[
+                    {'effect': 'loop'}  # this forces infinite looping
+                    ])
             return self.image.url
-        else:
-            return ''
+        return ''
 
- 
-
+class PostMe(models.Model):
+    id =    models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
