@@ -5,16 +5,29 @@ from .forms import PostForm, AttachmentForm
 from rest_framework.decorators import api_view
 from account.models import User
 from account.serializers import UserSerializer
+import cloudinary
+from cloudinary.uploader import destroy 
 
 @api_view(['DELETE'])
 def post_delete(request, pk):
     try:
         post = Post.objects.get(pk=pk, created_by=request.user)
+
+        for attachment in post.attachments.all():
+            if attachment.image:
+                media_public_id = attachment.image.public_id
+                
+                # delete the image from Cloudinary 
+                cloudinary.uploader.destroy(media_public_id)
+
+        # delete the post itself
         post.delete()
-        return JsonResponse({'message': 'Post deleted successfully'})
+        return JsonResponse({'message': 'Post and its attachments deleted successfully'})
     except Post.DoesNotExist:
         return JsonResponse({'error': 'Post not found or you do not have permission'}, status=403)
-
+    except cloudinary.exceptions.Error as e:
+        return JsonResponse({'error': f'Error deleting media from Cloudinary: {str(e)}'}, status=500)
+    
 @api_view(['GET'])
 def post_list(request):
     posts = Post.objects.all()
