@@ -8,7 +8,7 @@ from rest_framework import serializers
 class PostAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostAttachment
-        fields = ('id', 'get_image',)
+        fields = ('id', 'get_image', 'get_video')
     
 
 

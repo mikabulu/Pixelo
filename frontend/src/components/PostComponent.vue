@@ -15,7 +15,15 @@
     </div>
 
     <template v-if="post.attachments.length">
-      <img v-for="image in post.attachments" v-bind:key="image.id" :src="image.get_image">
+      <div v-for="attachment in post.attachments" v-bind:key="attachment.id" class="mb-3">
+        <!-- image attachment -->
+        <img v-if="attachment.get_image" :src="attachment.get_image" class="w-full rounded-lg">
+
+        <!-- video attachment-->
+        <video v-if="attachment.get_video" controls class="w-full rounded-lg">
+          <source :src="attachment.get_video" type="video/mp4">
+        </video>
+      </div>
     </template>
     <!-- Post Content -->
     <div v-html="renderHashtags(post.body)" class="post-body my-3"></div>
@@ -50,7 +58,7 @@
       </div>
 
       <!-- Trash Icon (only for own posts)-->
-      <div class="flex items-center" @click="deletePost" v-if="post.created_by.id === userStore.user.id"> 
+      <div class="flex items-center" @click="deletePost" v-if="post.created_by.id === userStore.user.id">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="w-6 h-6 text-gray-500 hover:text-red-500 cursor-pointer">
           <path stroke-linecap="round" stroke-linejoin="round"

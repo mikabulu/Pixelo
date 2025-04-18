@@ -54,7 +54,7 @@
                 <div class="flex flex-col items-center justify-center">
                     <img :src="user.get_avatar" class="h-40 w-40 mb-3 rounded-full object-cover">
                     <p><strong>{{ user.name }}</strong></p>
-                    <p class = "text-xs text-gray-500">{{ user.account_type }}</p>
+                    <p class="text-xs text-gray-500">{{ user.account_type }}</p>
                     <p class="text-xs text-500 mt-4">{{ user.bio }}</p>
                     <div class="mt-5 flex space-x-8 justify-around">
                         <p class="text-xs text-gray-500">{{ followers_count }} {{ followers_count === 1 ? 'follower' :
@@ -81,8 +81,15 @@
                 </div>
             </div>
 
+            <!-- loading message -->
+            <div v-if="loadingMessage" class="w-full bg-white rounded-lg shadow-md p-4 mb-4 text-center">
+                <div class="flex items-center justify-center py-4">
+                    <span>{{ loadingMessage }}</span>
+                </div>
+            </div>
+
             <!-- Posts  -->
-            <PostComponent v-for="post in posts" :key="post.id" :post="post" @postDeleted="deletePost"/>
+            <PostComponent v-for="post in posts" :key="post.id" :post="post" @postDeleted="deletePost" />
         </div>
     </div>
 
@@ -94,18 +101,31 @@
                 <button @click="showAddPostModal = false" class="text-gray-500 hover:text-gray-700">✕</button>
             </div>
             <form v-on:submit.prevent="submitFormAndClose" method="post">
-                <div id="preview" v-if="url" class="mx-5 mt-5">
+                <!-- Image Preview -->
+                <div id="preview" v-if="url && mediaType === 'image'" class="mx-5 mt-5">
                     <img :src="url" />
+                </div>
+                <!-- Video Preview -->
+                <div id="videoPreview" v-if="url && mediaType === 'video'" class="mx-5 mt-5">
+                    <video controls class="w-full">
+                        <source :src="url" :type="fileType">
+                        Your browser does not support the video tag.
+                    </video>
                 </div>
                 <div class="p-4">
                     <textarea v-model="body" class="p-4 w-full bg-gray-100 rounded-lg" placeholder="Add Post"></textarea>
                 </div>
                 <div class="p-4 border-t border-gray-100 flex justify-between">
-                    <label class="custom-file-upload inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">
-                        <input type="file" ref="file" @change="onFileChange" />
-                        Upload Image
-                    </label>
-                    <button class="inline-block py-4 px-6 bg-[#bfdaa4]  text-white rounded-lg">Post</button>
+                    <div class="flex space-x-2">
+                        <label class="custom-file-upload inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">
+                            <input type="file" ref="file" @change="onFileChange" accept="image/*,video/*" />
+                            Upload Media
+                        </label>
+                        <span v-if="mediaType" class="self-center text-sm text-gray-500">
+                            {{ mediaType === 'image' ? 'Image' : 'Video' }} selected
+                        </span>
+                    </div>
+                    <button class="inline-block py-4 px-6 bg-[#bfdaa4] text-white rounded-lg">Post</button>
                 </div>
             </form>
         </div>
@@ -146,7 +166,10 @@ export default {
             followers_count: 0,
             following_count: 0,
             showSettingsMenu: false,
-            url: null
+            url: null,
+            mediaType: null,
+            fileType: null,
+            loadingMessage: null
         }
     },
     watch: {
@@ -168,13 +191,34 @@ export default {
         document.removeEventListener('click', this.closeSettingsMenuOutside);
     },
     methods: {
-        deletePost(id){
+        deletePost(id) {
             this.posts = this.posts.filter(post => post.id !== id)
         },
         onFileChange(e) {
             const file = e.target.files[0];
+            if (!file) return;
+
+            this.fileType = file.type;
+
+            // check file size 
+            const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+            if (file.type.startsWith('video/') && file.size > MAX_VIDEO_SIZE) {
+                alert(`Video is too large. Please select a video smaller than ${MAX_VIDEO_SIZE / (1024 * 1024)}MB.`);
+                e.target.value = ''; // clear file input
+                return;
+            }
+
             this.url = URL.createObjectURL(file);
+
+            // check if video or image 
+            if (file.type.startsWith('image/')) {
+                this.mediaType = 'image';
+            }
+            if (file.type.startsWith('video/')) {
+                this.mediaType = 'video';
+            }
         },
+
         logout() {
             axios
                 .post('/api/logout/')
@@ -266,8 +310,25 @@ export default {
         submitForm() {
             console.log('submitForm', this.body)
             let formData = new FormData()
-            formData.append('image', this.$refs.file.files[0])
+            this.loadingMessage = 'Creating post...';
+            const file = this.$refs.file.files[0];
+            if (file) {
+                // check if the file is an image or video
+                if (this.mediaType === 'image') {
+                    formData.append('image', file);
+                    this.loadingMessage;
+                } else if (this.mediaType === 'video') {
+                    formData.append('video', file);
+                    this.loadingMessage;
+                }
+            } else {
+                this.loadingMessage = 'Creating post...';
+            }
+
             formData.append('body', this.body)
+
+            // close modal 
+            this.showAddPostModal = false;
 
             axios
                 .post('/api/posts/create/', formData, {
@@ -275,14 +336,18 @@ export default {
                         'Content-Type': 'multipart/form-data'
                     }
                 })
-                .then(response => {
+                .then(response => { //clear 
                     console.log('data', response.data)
-                    this.posts.unshift(response.data)
-                    this.body = ''
-                    this.url=null
+                    this.loadingMessage = null; 
+                    this.posts.unshift(response.data);
+                    this.body = '';
+                    this.url = null;
+                    this.mediaType = null;
                 })
                 .catch(error => {
                     console.log('error', error)
+                    this.loadingMessage = null; 
+                    alert('There was an error uploading your post.');
                 })
         },
 

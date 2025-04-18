@@ -28,20 +28,29 @@ class Comment(models.Model):
 
 class PostAttachment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    image = CloudinaryField('image', folder ='post_attachments') 
-    created_by = models.ForeignKey(User, related_name='post_attachments', on_delete=models.CASCADE) #when delete user, delete all posts
-
+    image = CloudinaryField('image', folder='post_attachments', blank=True, null=True)
+    video = CloudinaryField('video', folder='post_attachments', blank=True, null=True, 
+                           resource_type='video', 
+                           eager=[{'quality': 'auto'}],
+                           eager_async=True)  # async processing
+    created_by = models.ForeignKey(User, related_name='post_attachments', on_delete=models.CASCADE)
+    
     def get_image(self):
         if self.image:
             if self.image.url.lower().endswith('.gif'):
                 return self.image.build_url(transformation=[
-                    {'effect': 'loop'}  # this forces infinite looping
+                    {'effect': 'loop'}  # infinite looping for gifs 
                     ])
             return self.image.url
         return ''
+    
+    def get_video(self):
+        if self.video:
+            return self.video.url
+        return ''
+    
 
-class PostMe(models.Model):
-    id =    models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

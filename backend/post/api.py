@@ -50,30 +50,41 @@ def post_list_profile(request, id):
         }, safe=False)
            
 
-@api_view(['POST'])  
+@api_view(['POST'])
 def post_create(request):
     form = PostForm(request.data)
     attachment = None
+    
     if request.FILES:
         attachment_form = AttachmentForm(request.POST, request.FILES)
+        
         if attachment_form.is_valid():
             attachment = attachment_form.save(commit=False)
             attachment.created_by = request.user
-            attachment.save()
-
+            
+            # Handle video files with special considerations
+            if 'video' in request.FILES:
+                try:
+                    # Apply video-specific options when saving
+                    attachment.save()
+                except Exception as e:
+                    return JsonResponse({'error': str(e)}, status=400)
+            else:
+                # Normal save for images
+                attachment.save()
+    
     if form.is_valid():
         post = form.save(commit=False)
         post.created_by = request.user
         post.save()
-
-        if attachment: 
+        
+        if attachment:
             post.attachments.add(attachment)
-
-
+        
         serializer = PostSerializer(post)
         return JsonResponse(serializer.data, safe=False)
     else:
-        return JsonResponse({'error': 'error'}) 
+        return JsonResponse({'error': 'error'})
     
 @api_view(['GET'])
 def feed(request):
