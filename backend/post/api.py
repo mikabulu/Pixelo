@@ -12,15 +12,18 @@ from cloudinary.uploader import destroy
 def post_delete(request, pk):
     try:
         post = Post.objects.get(pk=pk, created_by=request.user)
-
+        
         for attachment in post.attachments.all():
+            # image deletion from cloudinary
             if attachment.image:
                 media_public_id = attachment.image.public_id
-                
-                # delete the image from Cloudinary 
                 cloudinary.uploader.destroy(media_public_id)
-
-        # delete the post itself
+            
+            # video deletion from cloudinary
+            if attachment.video:
+                video_public_id = attachment.video.public_id
+                cloudinary.uploader.destroy(video_public_id, resource_type="video")
+        
         post.delete()
         return JsonResponse({'message': 'Post and its attachments deleted successfully'})
     except Post.DoesNotExist:
