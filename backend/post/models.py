@@ -70,7 +70,13 @@ class Post(models.Model):
 
     def created_at_formatted(self):
         return timesince(self.created_at)
-    
+
+    def delete(self, *args, **kwargs):
+        # delete related attachments, comments( manytomany field)
+        self.comments.all().delete()
+        self.attachments.all().delete()
+        super().delete(*args, **kwargs)
+
 class Trend(models.Model):
     hashtag = models.CharField(max_length=255)
     occurences = models.IntegerField()
