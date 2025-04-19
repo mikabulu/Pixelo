@@ -94,8 +94,16 @@ export const useUserStore = defineStore('user', {
 
             console.log('User', this.user)
         },
-
-
+        //update local state!!
+        fetchUserInfo() {
+            axios.get('/api/me/')
+                .then(response => {
+                    this.setUserInfo(response.data)
+                })
+                .catch(error => {
+                    console.log('Failed to fetch user info:', error)
+                })
+        },
         refreshToken() {
             axios.post('/api/refresh/', {
                 refresh: this.user.refresh
@@ -107,7 +115,7 @@ export const useUserStore = defineStore('user', {
 
                     axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.access
                 })
-                .catch((error)=>{
+                .catch((error) => {
                     console.log(error)
 
                     this.removeToken()

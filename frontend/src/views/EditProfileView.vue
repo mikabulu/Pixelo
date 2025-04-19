@@ -129,6 +129,7 @@ export default {
                                 account_type: this.form.account_type
                             })
                             this.$router.back() //back to profile page
+                            this.userStore.fetchUserInfo() //fetch user info to update store (for avatar on header)
                         } else {
                             this.errors.push('Email already exists')
                         }
