@@ -77,8 +77,8 @@ export default {
             form: {
                 email: this.userStore.user.email,
                 name: this.userStore.user.name,
-                bio: this.userStore.user.bio,
-                account_type: this.userStore.user.account_type,
+                bio: this.userStore.user.bio || '',
+                account_type: this.userStore.user.account_type || 'enthusiast',
 
             },
             errors: [],

@@ -121,9 +121,6 @@
                             <input type="file" ref="file" @change="onFileChange" accept="image/*,video/*" />
                             Upload Media
                         </label>
-                        <span v-if="mediaType" class="self-center text-sm text-gray-500">
-                            {{ mediaType === 'image' ? 'Image' : 'Video' }} selected
-                        </span>
                     </div>
                     <button class="inline-block py-4 px-6 bg-[#bfdaa4] text-white rounded-lg">Post</button>
                 </div>
