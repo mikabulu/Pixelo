@@ -81,3 +81,7 @@ class Trend(models.Model):
     hashtag = models.CharField(max_length=255)
     occurences = models.IntegerField()
 
+class Portfolio(models.Model):
+    user = models.OneToOneField(User, related_name='portfolio', on_delete=models.CASCADE)
+    posts = models.ManyToManyField(Post, related_name='portfolios', blank=True)
+    

@@ -1,4 +1,3 @@
-<!-- PostComponent.vue -->
 <template>
   <div class="w-full bg-white rounded-lg shadow-md p-4 flex flex-col">
     <!-- Post Header -->
@@ -43,7 +42,7 @@
             {{ post.likes_count }} {{ post.likes_count === 1 ? 'like' : 'likes' }}
           </span>
         </div>
-        <!-- trash icon  -->
+        <!-- comment icon  -->
         <div class="flex items-center space-x-2">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
             class="w-6 h-6">
@@ -54,6 +53,19 @@
           <RouterLink :to="{ name: 'postview', params: { id: post.id } }" class="text-gray-500 text-xs">
             {{ post.comments_count }} comments
           </RouterLink>
+        </div>
+
+        <!-- Portfolio Button (only for own posts + not for text posts) -->
+        <div v-if="userStore.user.id === post.created_by.id && post.attachments.length > 0"
+          class="flex items-center space-x-2" @click="togglePortfolio">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="w-6 h-6" :class="{ 'text-[#a9c191]': inPortfolio }">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+          </svg>
+          <span class="text-gray-500 text-xs">
+            {{ inPortfolio ? 'Remove from Portfolio' : 'Add to Portfolio' }}
+          </span>
         </div>
       </div>
 
@@ -66,6 +78,7 @@
         </svg>
       </div>
     </div>
+
     <!-- Delete Confirmation Modal -->
     <div v-if="showDeleteConfirmModal" class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50">
       <div class="bg-white border border-gray-200 rounded-lg max-w-md w-full mx-4">
@@ -105,12 +118,14 @@ export default {
   data() {
     return {
       liked: false,
+      inPortfolio: false,
       showDeleteConfirmModal: false
     }
   },
 
   mounted() {
     this.checkLikeStatus();
+    this.checkPortfolioStatus();
   },
 
   methods: {
@@ -144,6 +159,18 @@ export default {
         });
     },
 
+    // check if post is in portfolio
+    checkPortfolioStatus() {
+      axios
+        .get(`/api/posts/${this.post.id}/is_in_portfolio/`)
+        .then(response => {
+          this.inPortfolio = response.data.is_in_portfolio;
+        })
+        .catch(error => {
+          console.log('Error checking portfolio status', error);
+        });
+    },
+
     // like/unlike post 
     toggleLike() {
       console.log('Toggle like for post:', this.post.id)
@@ -161,6 +188,32 @@ export default {
         .catch(error => {
           console.log('Error', error)
         })
+    },
+
+    // add/remove from portfolio
+    togglePortfolio() {
+      if (this.inPortfolio) {
+        // Remove from portfolio
+        axios
+          .post(`/api/posts/${this.post.id}/remove_from_portfolio/`)
+          .then(response => {
+            this.inPortfolio = false;
+            this.$emit('postRemoved', this.post.id);
+          })
+          .catch(error => {
+            console.log('Error removing from portfolio', error);
+          });
+      } else {
+        // Add to portfolio
+        axios
+          .post(`/api/posts/${this.post.id}/add_to_portfolio/`)
+          .then(response => {
+            this.inPortfolio = true;
+          })
+          .catch(error => {
+            console.log('Error adding to portfolio', error);
+          });
+      }
     },
 
     //replace hashtag with clickable link 

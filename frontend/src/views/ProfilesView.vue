@@ -108,7 +108,7 @@
 
             <!-- Portfolio -->
             <div v-if="currentTab === 'portfolio'" class="text-center bg-white rounded-lg shadow-md p-4">
-                <p>Portfolio content coming soon.</p>
+                <PortfolioComponent/>
             </div>
         </div>
     </div>
@@ -160,12 +160,14 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import PostComponent from '@/components/PostComponent.vue'
 import GalleryComponent from '@/components/GalleryComponent.vue'
+import PortfolioComponent from '@/components/PortfolioComponent.vue'
 export default {
     name: 'GridLayout',
 
     components: {
         PostComponent,
-        GalleryComponent
+        GalleryComponent, 
+        PortfolioComponent
     },
     setup() {
         const userStore = useUserStore()

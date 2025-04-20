@@ -1,6 +1,6 @@
 from django.http import JsonResponse
-from .serializers import PostSerializer, PostDetailSerializer, CommentSerializer, TrendSerializer
-from .models import Post, Like, Comment, Trend 
+from .serializers import PostSerializer, PostDetailSerializer, CommentSerializer, TrendSerializer, PortfolioSerializer
+from .models import Post, Like, Comment, Trend, Portfolio
 from .forms import PostForm, AttachmentForm
 from rest_framework.decorators import api_view
 from account.models import User
@@ -167,3 +167,86 @@ def get_trends(request):
     trends = Trend.objects.all()
     serializer = TrendSerializer(trends, many=True)
     return JsonResponse(serializer.data, safe=False)
+
+@api_view(['POST'])
+def add_to_portfolio(request, pk):
+    """Add a post to the user's portfolio"""
+    try:
+        post = Post.objects.get(pk=pk)
+
+        portfolio, created = Portfolio.objects.get_or_create(user=request.user)
+        
+        # check if post is already in portfolio
+        if portfolio.posts.filter(pk=pk).exists():
+            return JsonResponse({'message': 'Post already in portfolio'})
+        
+        portfolio.posts.add(post)
+        
+        return JsonResponse({'message': 'Added to portfolio'})
+    except Post.DoesNotExist:
+        return JsonResponse({'error': 'Post not found'}, status=404)
+
+@api_view(['POST'])
+def remove_from_portfolio(request, pk):
+    """Remove a post from the user's portfolio"""
+    try:
+        post = Post.objects.get(pk=pk)
+        
+        try:
+            portfolio = Portfolio.objects.get(user=request.user)
+            
+            # check if post is in portfolio
+            if not portfolio.posts.filter(pk=pk).exists():
+                return JsonResponse({'message': 'Post not in portfolio'})
+            
+            portfolio.posts.remove(post)
+            
+            return JsonResponse({'message': 'Removed from portfolio'})
+        except Portfolio.DoesNotExist:
+            return JsonResponse({'error': 'Portfolio not found'}, status=404)
+    except Post.DoesNotExist:
+        return JsonResponse({'error': 'Post not found'}, status=404)
+
+@api_view(['GET'])
+def get_portfolio(request, id):
+    """Get a user's portfolio posts"""
+    try:
+        user = User.objects.get(pk=id)
+        
+        try:
+            portfolio = Portfolio.objects.get(user=user)
+            posts = portfolio.posts.all()
+            
+            # Use the same serializer format as post_list_profile
+            posts_serializer = PostSerializer(posts, many=True, context={'request': request})
+            user_serializer = UserSerializer(user)
+            
+            return JsonResponse({
+                'posts': posts_serializer.data,
+                'user': user_serializer.data
+            }, safe=False)
+        except Portfolio.DoesNotExist:
+            # Return empty posts list if portfolio doesn't exist
+            user_serializer = UserSerializer(user)
+            return JsonResponse({
+                'posts': [],
+                'user': user_serializer.data
+            }, safe=False)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+@api_view(['GET'])
+def is_in_portfolio(request, pk):
+    """Check if a post is in the user's portfolio"""
+    try:
+        post = Post.objects.get(pk=pk)
+        
+        try:
+            portfolio = Portfolio.objects.get(user=request.user)
+            is_in_portfolio = portfolio.posts.filter(pk=pk).exists()
+            
+            return JsonResponse({'is_in_portfolio': is_in_portfolio})
+        except Portfolio.DoesNotExist:
+            return JsonResponse({'is_in_portfolio': False})
+    except Post.DoesNotExist:
+        return JsonResponse({'error': 'Post not found'}, status=404)
