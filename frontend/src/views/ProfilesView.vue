@@ -63,33 +63,53 @@
                         <p class="text-xs text-gray-500">{{ posts.length }} {{ posts.length === 1 ? 'post' : 'posts' }}</p>
                     </div>
 
+                    <!-- TABS -->
                     <ul
                         class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:border-gray-700 dark:text-gray-400 mt-5">
                         <li class="me-2">
-                            <a href="#" aria-current="page"
-                                class="inline-block p-4 text-[#a9c191] rounded-t-lg dark:text-blue-500">Feed</a>
+                            <a href="#" @click.prevent="currentTab = 'feed'"
+                                :class="['inline-block p-4 rounded-t-lg', currentTab === 'feed' ? 'text-[#a9c191]' : 'dark:hover:text-black-300']">
+                                Feed
+                            </a>
                         </li>
                         <li class="me-2">
-                            <a href="#"
-                                class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-[#bfdaa4] dark:hover:text-gray-300">Gallery</a>
+                            <a href="#" @click.prevent="currentTab = 'gallery'"
+                                :class="['inline-block p-4 rounded-t-lg', currentTab === 'gallery' ? 'text-[#a9c191]' : 'dark:hover:text-black-300']">
+                                Gallery
+                            </a>
                         </li>
                         <li class="me-2">
-                            <a href="#"
-                                class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-[#bfdaa4] dark:hover:text-gray-300">Portfolio</a>
+                            <a href="#" @click.prevent="currentTab = 'portfolio'"
+                                :class="['inline-block p-4 rounded-t-lg', currentTab === 'portfolio' ? 'text-[#a9c191]' : 'dark:hover:text-black-300']">
+                                Portfolio
+                            </a>
                         </li>
                     </ul>
+
                 </div>
             </div>
 
-            <!-- loading message -->
-            <div v-if="loadingMessage" class="w-full bg-white rounded-lg shadow-md p-4 mb-4 text-center">
-                <div class="flex items-center justify-center py-4">
-                    <span>{{ loadingMessage }}</span>
+            <!-- Feed Posts -->
+            <div v-if="currentTab === 'feed'">
+                <!-- loading message -->
+                <div v-if="loadingMessage" class="w-full bg-white rounded-lg shadow-md p-4 mb-4 text-center">
+                    <div class="flex items-center justify-center py-4">
+                        <span>{{ loadingMessage }}</span>
+                    </div>
                 </div>
+
+                <PostComponent v-for="post in posts" :key="post.id" :post="post" @postDeleted="deletePost" class="mb-5"/>
             </div>
 
-            <!-- Posts  -->
-            <PostComponent v-for="post in posts" :key="post.id" :post="post" @postDeleted="deletePost" />
+            <!-- Gallery -->
+            <div v-else-if="currentTab === 'gallery'">
+                <GalleryComponent/>
+            </div>
+
+            <!-- Portfolio -->
+            <div v-if="currentTab === 'portfolio'" class="text-center bg-white rounded-lg shadow-md p-4">
+                <p>Portfolio content coming soon.</p>
+            </div>
         </div>
     </div>
 
@@ -139,11 +159,13 @@ input[type="file"] {
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import PostComponent from '@/components/PostComponent.vue'
+import GalleryComponent from '@/components/GalleryComponent.vue'
 export default {
     name: 'GridLayout',
 
     components: {
-        PostComponent
+        PostComponent,
+        GalleryComponent
     },
     setup() {
         const userStore = useUserStore()
@@ -166,7 +188,8 @@ export default {
             url: null,
             mediaType: null,
             fileType: null,
-            loadingMessage: null
+            loadingMessage: null,
+            currentTab: 'feed' // default tab
         }
     },
     watch: {
@@ -335,7 +358,7 @@ export default {
                 })
                 .then(response => { //clear 
                     console.log('data', response.data)
-                    this.loadingMessage = null; 
+                    this.loadingMessage = null;
                     this.posts.unshift(response.data);
                     this.body = '';
                     this.url = null;
@@ -343,7 +366,7 @@ export default {
                 })
                 .catch(error => {
                     console.log('error', error)
-                    this.loadingMessage = null; 
+                    this.loadingMessage = null;
                     alert('There was an error uploading your post.');
                 })
         },
