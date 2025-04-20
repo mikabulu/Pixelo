@@ -1,7 +1,8 @@
+<!-- PortfolioComponent.vue -->
 <template>
   <div>
-    <!-- loading -->
-    <div v-if="loading" class="w-full bg-white rounded-lg p-4 mb-4 text-center">
+    <!-- Loading message -->
+    <div v-if="loading" class="w-full bg-white rounded-lg shadow-md p-4 mb-4 text-center">
       <div class="flex items-center justify-center py-4">
         <span>Loading portfolio...</span>
       </div>
@@ -18,12 +19,12 @@
     <div v-else class="space-y-4">
       <div v-for="post in posts" :key="post.id" class="bg-white rounded-lg shadow-md overflow-hidden">
         <!-- Post Header -->
-        <div class="p-4 flex items-center justify-between">
+        <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
           </div>
-          <!-- remove from portfolio button (own posts) -->
+          <!-- remove from portfolio button (own posts)-->
           <button v-if="isOwnPortfolio" @click="removeFromPortfolio(post.id)"
-            class="text-sm text-gray-500 hover:text-[#bfdaa4] flex items-center space-x-1">
+            class="text-sm text-gray-500 hover:text-[#bfdaa4] flex items-center space-x-1 my-2 mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-5 h-5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -48,7 +49,7 @@
           </template>
 
           <!-- post body -->
-          <div class ="my-4">{{post.body}}</div>
+          <div class="my-3">{{post.body}}</div>
         </RouterLink>
       </div>
     </div>
@@ -78,6 +79,17 @@ export default {
       return this.userStore.user.id === this.$route.params.id;
     }
   },
+  watch: {
+    // watch for route changes
+    '$route.params.id': {
+      handler(newId, oldId) {
+        if (newId !== oldId) {
+          this.getPortfolioPosts();
+        }
+      },
+      immediate: false
+    }
+  },
   mounted() {
     this.getPortfolioPosts()
   },
@@ -99,7 +111,7 @@ export default {
       axios
         .post(`/api/posts/${postId}/remove_from_portfolio/`)
         .then(response => {
-          // filter out deleted posts 
+          // filter out removed posts 
           this.posts = this.posts.filter(post => post.id !== postId)
         })
         .catch(error => {
