@@ -18,6 +18,7 @@ urlpatterns = [
     path('<uuid:pk>/is_in_portfolio/', api.is_in_portfolio, name='is_in_portfolio'),
     path('item-recommendations/', api.item_based_recommendations, name='item_recommendations'),
     path('item-recommendations/<int:limit>/', api.item_based_recommendations, name='item_recommendations_with_limit'),
-
-    
+    path('tags/<str:user_id>/', api.get_user_tags, name='get_user_tags'),
+    path('newtag/', api.create_tag, name='create_new_tag'),
+    path('<uuid:post_id>/tag/<int:tag_id>/', api.add_tag_to_post, name='add_tag_to_post'),   
 ] 

@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from .serializers import PostSerializer, PostDetailSerializer, CommentSerializer, TrendSerializer, PortfolioSerializer
-from .models import Post, Like, Comment, Trend, Portfolio
+from .models import Post, Like, Comment, Trend, Portfolio, ProjectTag
 from .forms import PostForm, AttachmentForm
 from rest_framework.decorators import api_view
 from account.models import User
@@ -257,3 +257,25 @@ def item_based_recommendations(request, limit=5):
     recommended_posts = get_item_based_recommendations(request.user, max_recommendations=limit)
     serializer = PostSerializer(recommended_posts, many=True, context={'request': request})
     return JsonResponse(serializer.data, safe=False)
+
+@api_view(['GET'])
+def get_user_tags(request, user_id):
+    tags = ProjectTag.objects.filter(user_id=user_id)
+    data = [{'id': tag.id, 'name': tag.name} for tag in tags]
+    return JsonResponse(data, safe=False)
+
+@api_view(['POST', 'GET'])  
+def create_tag(request):
+    if request.method == 'POST':
+        name = request.data.get('name')
+        tag = ProjectTag.objects.create(name=name, user=request.user)
+        return JsonResponse({'id': tag.id, 'name': tag.name})
+    else:
+        return JsonResponse({'message': 'Tag creation endpoint'})
+
+@api_view(['POST'])
+def add_tag_to_post(request, post_id, tag_id):
+    post = Post.objects.get(id=post_id)
+    tag = ProjectTag.objects.get(id=tag_id)
+    post.project_tags.add(tag)
+    return JsonResponse({'success': True})

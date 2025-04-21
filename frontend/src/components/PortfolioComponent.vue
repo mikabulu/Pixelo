@@ -1,6 +1,14 @@
-<!-- PortfolioComponent.vue -->
 <template>
   <div>
+    <!-- PROJECT SELECTION -->
+    <div class="mb-4">
+      <select v-model="selectedTag" class="p-2 border rounded">
+        <option value="">Featured Posts</option>
+        <option v-for="tag in tags" :key="tag.id" :value="tag.id">
+          {{ tag.name }}
+        </option>
+      </select>
+    </div>
     <!-- Loading message -->
     <div v-if="loading" class="w-full bg-white rounded-lg shadow-md p-4 mb-4 text-center">
       <div class="flex items-center justify-center py-4">
@@ -17,11 +25,15 @@
 
     <!-- portfolio items -->
     <div v-else class="space-y-4">
-      <div v-for="post in posts" :key="post.id" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div v-for="post in filteredPosts" :key="post.id" class="bg-white rounded-lg shadow-md overflow-hidden">
         <!-- Post Header -->
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
           </div>
+          <button @click="openTagSelector(post.id)" class="text-sm text-gray-500">
+            Tag Project
+          </button>
+
           <!-- remove from portfolio button (own posts)-->
           <button v-if="isOwnPortfolio" @click="removeFromPortfolio(post.id)"
             class="text-sm text-gray-500 hover:text-[#bfdaa4] flex items-center space-x-1 my-2 mr-2">
@@ -49,8 +61,40 @@
           </template>
 
           <!-- post body -->
-          <div class="my-3">{{post.body}}</div>
+          <div class="my-3">{{ post.body }}</div>
         </RouterLink>
+      </div>
+    </div>
+
+    <!-- Tag selector modal -->
+    <div v-if="showTagSelector" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-4 rounded-lg max-w-md w-full">
+        <h3 class="font-medium mb-3">Add Project Tag</h3>
+
+        <!-- list -->
+        <div v-if="tags.length === 0" class="text-center py-2 mb-3">
+          <p>No project tags yet</p>
+        </div>
+        <div v-else class="mb-4 max-h-60 overflow-y-auto">
+          <div v-for="tag in tags" :key="tag.id" @click="addTagToPost(tag.id)"
+            class="p-2 hover:bg-gray-100 cursor-pointer rounded">
+            {{ tag.name }}
+          </div>
+        </div>
+
+        <!-- new tag -->
+        <div class="mb-4">
+          <input v-model="newTagName" placeholder="New project name" class="p-2 border rounded w-full mb-2" />
+          <button @click="createTag" class="px-3 py-1 bg-green-100 text-green-800 rounded" :disabled="!newTagName">
+            Create & Add
+          </button>
+        </div>
+
+        <div class="flex justify-end">
+          <button @click="showTagSelector = false" class="px-3 py-1 bg-gray-100 rounded">
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -71,15 +115,42 @@ export default {
   data() {
     return {
       posts: [],
-      loading: true
+      loading: true,
+      selectedTag: '',
+      selectedPostId: null, 
+      showTagSelector: false, 
+      tags: [], 
+      newTagName: '', 
     }
   },
   computed: {
     isOwnPortfolio() {
       return this.userStore.user.id === this.$route.params.id;
+    },
+    // all portfolio posts unless tag selected 
+    filteredPosts() {
+      if (!this.selectedTag) {
+        return this.posts; 
+      }
+
+      console.log('Selected tag:', this.selectedTag);
+      console.log('Posts:', this.posts);
+      return this.posts.filter(post => {
+        console.log('Checking post:', post.id, 'tags:', post.project_tags);
+        return post.project_tags &&
+          post.project_tags.some(tag => String(tag.id) === String(this.selectedTag));
+      });
     }
   },
   watch: {
+    showTagSelector(val) {
+      if (val) {
+        this.loadTags(); //add new tag immediately to tag list
+      }
+      if (!val) {
+        this.getPortfolioPosts(); // refresh posts when modal is closed
+      }
+    },
     // watch for route changes
     '$route.params.id': {
       handler(newId, oldId) {
@@ -92,13 +163,53 @@ export default {
   },
   mounted() {
     this.getPortfolioPosts()
+    this.loadTags();
   },
   methods: {
+    openTagSelector(postId) {
+      this.selectedPostId = postId;
+      this.showTagSelector = true;
+    },
+    loadTags() {
+      axios.get(`/api/posts/tags/${this.userStore.user.id}/`)
+        .then(response => {
+          this.tags = response.data;
+        })
+        .catch(error => {
+          console.log('Error loading tags:', error);
+        });
+    },
+    addTagToPost(tagId) {
+      axios.post(`/api/posts/${this.selectedPostId}/tag/${tagId}/`)
+        .then(() => {
+          this.showTagSelector = false;
+          this.selectedPostId = null;
+          this.getPortfolioPosts(); // refresh posts after adding tag
+        })
+        .catch(error => {
+          console.log('Error adding tag:', error);
+        });
+    },
+    createTag() {
+      if (!this.newTagName) return;
+
+      axios.post('/api/posts/newtag/', { name: this.newTagName })
+        .then(response => {
+          //add to list, then add to post then clear box 
+          this.tags.push(response.data);
+          this.addTagToPost(response.data.id);
+          this.newTagName = '';
+        })
+        .catch(error => {
+          console.log('Error creating tag:', error);
+        });
+    },
     getPortfolioPosts() {
       this.loading = true
       axios
         .get(`/api/posts/portfolio/${this.$route.params.id}/`)
         .then(response => {
+          console.log('Posts with tags:', response.data.posts);
           this.posts = response.data.posts
           this.loading = false
         })

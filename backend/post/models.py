@@ -50,12 +50,11 @@ class PostAttachment(models.Model):
         return ''
     
 
-
-
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     body = models.TextField(blank=True, null = True) #caption not required
     attachments = models.ManyToManyField(PostAttachment, blank=True)
+    project_tags = models.ManyToManyField('ProjectTag', blank=True, related_name='posts')
 
     likes = models.ManyToManyField(Like, blank=True)
     likes_count = models.IntegerField(default=0)
@@ -84,4 +83,8 @@ class Trend(models.Model):
 class Portfolio(models.Model):
     user = models.OneToOneField(User, related_name='portfolio', on_delete=models.CASCADE)
     posts = models.ManyToManyField(Post, related_name='portfolios', blank=True)
+    
+class ProjectTag(models.Model):
+    name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, related_name='project_tags', on_delete=models.CASCADE)
     
