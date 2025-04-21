@@ -10,36 +10,36 @@
                     <button class="inline-block py-4 px-6 bg-[#bfdaa4] text-black rounded-lg">Search</button>
                 </form>
             </div>
-            
+
             <!--Trends Bar -->
-            <TrendsComponent/>
-            
+            <TrendsComponent />
+
             <!-- Recommendations Section (when not searching) -->
             <div v-if="!isSearching" class="w-full">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="font-semibold text-lg">Recommended For You</h2>
                 </div>
-                
+
                 <!-- Loading indicator -->
                 <div v-if="loadingRecommendations" class="text-center py-4">
                     <p>Loading recommendations...</p>
                 </div>
-                
+
                 <!-- No recommendations message -->
                 <div v-else-if="recommendations.length === 0" class="bg-white rounded-lg shadow p-6 text-center">
                     <p class="text-gray-500 mb-2">No recommendations available</p>
-                    <p class="text-gray-400 text-sm">Like more posts to get personalized recommendations</p>
+                    <p class="text-gray-400 text-sm">Like more posts to get personalised recommendations</p>
                 </div>
 
                 <!-- Recommendations -->
                 <PostComponent v-else v-for="post in recommendations" :key="post.id" :post="post" />
-                
+
                 <!-- Separator -->
                 <div v-if="recommendations.length > 0 && posts.length > 0" class="my-6 border-t border-gray-200">
                     <h2 class="font-semibold text-lg mt-6 mb-4">Explore More</h2>
                 </div>
             </div>
-            
+
             <!--Users (search results) -->
             <div class="p-4 bg-[#bfdaa4] border border-gray-200 rounded-lg grid grid-cols-4 gap-4 h-72 overflow-auto"
                 v-if="users.length">
@@ -59,8 +59,8 @@
                 </div>
             </div>
 
-            <!--Posts (from search or default) -->
-            <PostComponent v-for="post in posts" :key="post.id" :post="post" />
+            <!--Posts (from search or explore) -->
+            <PostComponent v-for="post in filteredPosts" :key="post.id" :post="post" />
         </div>
     </div>
 </template>
@@ -69,6 +69,7 @@
 import axios from 'axios'
 import PostComponent from '@/components/PostComponent.vue'
 import TrendsComponent from '@/components/TrendsComponent.vue'
+import { useUserStore } from '@/stores/user'
 
 export default {
     name: 'ExploreView',
@@ -76,6 +77,13 @@ export default {
     components: {
         PostComponent,
         TrendsComponent
+    },
+    setup() {
+        const userStore = useUserStore()
+
+        return {
+            userStore
+        }
     },
 
     data() {
@@ -88,12 +96,17 @@ export default {
             isSearching: false
         }
     },
-    
+    computed: {
+        //don't show posts created by the logged in user in explore 
+        filteredPosts() {
+            return this.posts.filter(post => post.created_by.id !== this.userStore.user.id); 
+        }
+    },
     mounted() {
         this.getRecommendations();
-        this.getDefaultPosts();
+        this.getExplorePosts();
     },
-    
+
     methods: {
         submitForm() {
             console.log('submitForm', this.query);
@@ -112,10 +125,9 @@ export default {
                     console.log('error:', error);
                 });
         },
-        
         getRecommendations() {
             this.loadingRecommendations = true;
-            
+
             axios
                 .get('/api/posts/item-recommendations/')
                 .then(response => {
@@ -128,26 +140,23 @@ export default {
                     this.loadingRecommendations = false;
                 });
         },
-    
-        getDefaultPosts() {
+        getExplorePosts() {
             axios
                 .get('/api/posts/')
                 .then(response => {
-                    // only set posts if not in search mode
                     if (!this.isSearching) {
                         this.posts = response.data;
                     }
                 })
                 .catch(error => {
-                    console.log('error getting posts:', error);
+                    console.log('Error getting posts:', error);
                 });
         },
-        
         resetSearch() {
             this.query = '';
             this.users = [];
             this.isSearching = false;
-            this.getDefaultPosts();
+            this.getExplorePosts();
         }
     }
 }
