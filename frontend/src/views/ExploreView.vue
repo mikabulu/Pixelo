@@ -3,11 +3,15 @@
         <div class="w-full max-w-4xl space-y-4">
             <!--Search Bar -->
             <div class="bg-white border border-gray-200 rounded-lg">
-                <form v-on:submit.prevent="submitForm" class="p-4 flex space-x-4">
-                    <input v-model="query" type="search" class="p-4 w-full bg-gray-100 rounded-lg"
-                        placeholder="What are you looking for?">
-
-                    <button class="inline-block py-4 px-6 bg-[#bfdaa4] text-black rounded-lg">Search</button>
+                <form v-on:submit.prevent="submitForm" class="p-2 flex space-x-4">
+                    <input v-model="query" type="search" placeholder = "Search for artists or posts" class="p-2 w-full bg-gray-100 rounded-lg">
+                    <button class="inline-block py-4 px-6 bg-[#bfdaa4] text-black rounded-lg"><svg
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                    </button>
                 </form>
             </div>
 
@@ -99,7 +103,7 @@ export default {
     computed: {
         //don't show posts created by the logged in user in explore 
         filteredPosts() {
-            return this.posts.filter(post => post.created_by.id !== this.userStore.user.id); 
+            return this.posts.filter(post => post.created_by.id !== this.userStore.user.id);
         }
     },
     mounted() {

@@ -1,14 +1,16 @@
 <template>
+  <!-- PROJECT SELECTION -->
+  <div class="relative mb-4">
+    <select v-model="selectedTag"
+      class="p-2 border rounded-md bg-white w-48 mt-2 text-sm text-gray-700 cursor-pointer">
+      <option value="">Featured Posts</option>
+      <option v-for="tag in tags" :key="tag.id" :value="tag.id">
+        {{ tag.name }}
+      </option>
+    </select>
+  </div>
+
   <div>
-    <!-- PROJECT SELECTION -->
-    <div class="mb-4">
-      <select v-model="selectedTag" class="p-2 border rounded">
-        <option value="">Featured Posts</option>
-        <option v-for="tag in tags" :key="tag.id" :value="tag.id">
-          {{ tag.name }}
-        </option>
-      </select>
-    </div>
     <!-- Loading message -->
     <div v-if="loading" class="w-full bg-white rounded-lg shadow-md p-4 mb-4 text-center">
       <div class="flex items-center justify-center py-4">
@@ -117,10 +119,10 @@ export default {
       posts: [],
       loading: true,
       selectedTag: '',
-      selectedPostId: null, 
-      showTagSelector: false, 
-      tags: [], 
-      newTagName: '', 
+      selectedPostId: null,
+      showTagSelector: false,
+      tags: [],
+      newTagName: '',
     }
   },
   computed: {
@@ -130,7 +132,7 @@ export default {
     // all portfolio posts unless tag selected 
     filteredPosts() {
       if (!this.selectedTag) {
-        return this.posts; 
+        return this.posts;
       }
 
       console.log('Selected tag:', this.selectedTag);
