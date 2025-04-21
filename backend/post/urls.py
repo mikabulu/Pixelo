@@ -16,5 +16,8 @@ urlpatterns = [
     path('<uuid:pk>/add_to_portfolio/', api.add_to_portfolio, name='add_to_portfolio'),
     path('<uuid:pk>/remove_from_portfolio/', api.remove_from_portfolio, name='remove_from_portfolio'),
     path('<uuid:pk>/is_in_portfolio/', api.is_in_portfolio, name='is_in_portfolio'),
+    path('item-recommendations/', api.item_based_recommendations, name='item_recommendations'),
+    path('item-recommendations/<int:limit>/', api.item_based_recommendations, name='item_recommendations_with_limit'),
+
     
 ] 
