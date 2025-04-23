@@ -241,6 +241,9 @@ export default {
                 delete query.tag;
                 this.$router.replace({ query });
             }
+            if (tabName === 'feed') {
+                this.getFeed(); //refresh so tags show up immediately 
+            }
         },
         deletePost(id) {
             this.posts = this.posts.filter(post => post.id !== id)
