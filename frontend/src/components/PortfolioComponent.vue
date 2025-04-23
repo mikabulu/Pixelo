@@ -314,7 +314,8 @@ export default {
       this.showTagSelector = true;
     },
     loadTags() {
-      axios.get(`/api/posts/tags/${this.userStore.user.id}/`)
+      const profileUserId = this.$route.params.id; // <- this is the profile owner's ID
+      axios.get(`/api/posts/tags/${profileUserId}/`)
         .then(response => {
           this.tags = response.data;
         })
