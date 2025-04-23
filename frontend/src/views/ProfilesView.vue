@@ -107,7 +107,7 @@
             </div>
 
             <!-- Portfolio -->
-            <div v-if="currentTab === 'portfolio'" class="text-center bg-white rounded-lg shadow-md p-4">
+            <div v-if="currentTab === 'portfolio'" class="text-center rounded-lg p-4">
                 <PortfolioComponent ref="portfolioComponent" />
             </div>
         </div>
@@ -229,13 +229,13 @@ export default {
         changeTab(tabName) {
             this.currentTab = tabName;
 
-            // Update the URL when changing tabs
+            // update URL when changing tabs 
             if (tabName === 'portfolio') {
                 this.$router.replace({
                     query: { ...this.$route.query, view: 'portfolio' }
                 });
             } else {
-                // Remove the view and tag params when switching to other tabs
+                // remove the view and tag params when switching to other tabs
                 const query = { ...this.$route.query };
                 delete query.view;
                 delete query.tag;

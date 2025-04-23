@@ -127,7 +127,7 @@
             <!-- Tag Project -->
             <button v-if="isOwnPortfolio" @click="openTagSelector(post.id)"
               class="text-sm text-gray-500 hover:text-[#bfdaa4] my-2 mx-2">
-              Tag Project
+              Add Project Tag
             </button>
 
             <!-- Remove button (right side) -->
