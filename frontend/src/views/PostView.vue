@@ -22,7 +22,7 @@
 
         <div class="bg-white border border-gray-200 rounded-lg mb-2" v-for="comment in post.comments"
             v-bind:key="comment.id">
-            <CommentComponent v-bind:comment="comment" />
+            <CommentComponent v-bind:comment="comment" @commentDeleted="handleCommentDeleted" />
         </div>
     </div>
 </template>
@@ -61,6 +61,11 @@ export default {
     },
 
     methods: {
+        handleCommentDeleted(commentId) {
+            // remove deleted comment from post comment array 
+            this.post.comments = this.post.comments.filter(comment => comment.id !== commentId);
+            this.post.comments_count -= 1;
+        },
         getPost() {
             axios
                 .get(`/api/posts/${this.$route.params.id}/`)

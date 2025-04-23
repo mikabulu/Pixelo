@@ -23,4 +23,5 @@ urlpatterns = [
     path('<uuid:post_id>/tag/<int:tag_id>/', api.add_tag_to_post, name='add_tag_to_post'),   
     path('<uuid:post_id>/remove-all-tags/', api.remove_all_tags_from_post, name='remove_all_tags_from_post'),
     path('tags/<int:tag_id>/delete/', api.delete_tag, name='delete_tag'),
+    path('comments/<uuid:comment_id>/delete/', api.delete_comment, name='delete_comment'),
 ] 

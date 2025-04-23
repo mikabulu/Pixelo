@@ -300,3 +300,29 @@ def delete_tag(request, tag_id):
         return JsonResponse({'success': True})
     except ProjectTag.DoesNotExist:
         return JsonResponse({'error': 'Tag not found'}, status=404)
+    
+# Add to your api.py
+@api_view(['DELETE'])
+def delete_comment(request, comment_id):
+    """Delete a comment"""
+    try:
+        comment = Comment.objects.get(id=comment_id)
+        post = Post.objects.filter(comments=comment).first()
+        
+        # Check if user is authorized to delete this comment
+        if request.user.id != comment.created_by.id and request.user.id != post.created_by.id:
+            return JsonResponse({'error': 'Not authorized'}, status=403)
+        
+        # Decrement the comment count on the post
+        post.comments.remove(comment)
+        post.comments_count = post.comments_count - 1
+        post.save()
+        
+        # Delete the comment
+        comment.delete()
+        
+        return JsonResponse({'success': True})
+    except Comment.DoesNotExist:
+        return JsonResponse({'error': 'Comment not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
