@@ -1,15 +1,108 @@
 <template>
   <!-- PROJECT SELECTION -->
-  <div class="relative mb-4">
-    <select v-model="selectedTag"
-      class="p-2 border rounded-md bg-white w-48 mt-2 text-sm text-gray-700 cursor-pointer">
-      <option value="">Featured Posts</option>
-      <option v-for="tag in tags" :key="tag.id" :value="tag.id">
-        {{ tag.name }}
-      </option>
-    </select>
+  <div class="flex justify-between items-center mb-4">
+    <div class="flex flex-wrap items-center gap-2">
+      <select v-model="selectedTag" class="p-2 border rounded-md bg-white w-48 mt-2 text-sm text-gray-700 cursor-pointer">
+        <option value="">All Posts</option>
+        <option v-for="tag in tags" :key="tag.id" :value="tag.id">
+          {{ tag.name }}
+        </option>
+      </select>
+
+      <!-- Project management button (only shown for own profile) -->
+      <button v-if="isOwnPortfolio" @click="showTagManager = true"
+        class="mt-2 text-sm text-gray-500 hover:text-[#bfdaa4] flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-6 mr-1">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+        </svg>
+
+        Manage Project Tags
+      </button>
+    </div>
+
+    <!-- View toggle -->
+    <div class="flex bg-[#bfdaa4] rounded-md p-1">
+      <button @click="viewMode = 'list'" class="px-3 py-1 rounded-md text-sm"
+        :class="viewMode === 'list' ? 'bg-white shadow-sm' : 'text-gray-500'">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+        </svg>
+      </button>
+      <button @click="viewMode = 'gallery'" class="px-3 py-1 rounded-md text-sm"
+        :class="viewMode === 'gallery' ? 'bg-white shadow-sm' : 'text-gray-500'">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 0 1-1.125-1.125v-3.75ZM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-8.25ZM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-2.25Z" />
+        </svg>
+      </button>
+    </div>
   </div>
 
+  <!-- Tag Manager Modal -->
+  <div v-if="showTagManager" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-4 rounded-lg max-w-md w-full">
+      <h3 class="font-medium mb-4">Manage Project Tags</h3>
+
+      <!-- Tag list  -->
+      <div v-if="tags.length === 0" class="text-center py-2 mb-3">
+        <p>No project tags yet</p>
+      </div>
+      <div v-else class="mb-4 max-h-60 overflow-y-auto">
+        <div v-for="tag in tags" :key="tag.id" class="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
+          <span>{{ tag.name }}</span>
+          <button @click="confirmDeleteTag(tag)" class="text-sm text-red-500 hover:text-red-700 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-4 h-4 mr-1">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <!-- new tag -->
+      <div class="mb-4">
+        <input v-model="newTagName" placeholder="New tag name" class="p-2 border rounded w-full mb-2" />
+        <button @click="createTagOnly" class="px-3 py-1 bg-green-100 text-green-800 rounded" :disabled="!newTagName">
+          Create Tag
+        </button>
+      </div>
+
+      <div class="flex justify-end">
+        <button @click="showTagManager = false" class="px-3 py-1 bg-gray-100 rounded">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- tag deletion modal  -->
+  <div v-if="showDeleteTagConfirmModal" class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50">
+    <div class="bg-white border border-gray-200 rounded-lg max-w-md w-full mx-4">
+      <div class="p-6 text-center">
+        <p class="mb-6">Are you sure you want to delete the "{{ tagToDelete?.name }}" tag?</p>
+        <div class="flex justify-center space-x-4">
+          <button @click="showDeleteTagConfirmModal = false"
+            class="py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+            Cancel
+          </button>
+          <button @click="deleteTag" class="py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- List/Gallery view toggle -->
   <div>
     <!-- Loading message -->
     <div v-if="loading" class="w-full bg-white rounded-lg shadow-md p-4 mb-4 text-center">
@@ -25,78 +118,78 @@
       </div>
     </div>
 
-    <!-- portfolio items -->
-    <div v-else class="space-y-4">
-      <div v-for="post in filteredPosts" :key="post.id" class="bg-white rounded-lg shadow-md overflow-hidden">
-        <!-- Post Header -->
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
+    <!-- Portfolio items - conditional rendering based on view mode -->
+    <div v-else>
+      <!-- List View -->
+      <div v-if="viewMode === 'list'" class="space-y-4">
+        <div v-for="post in filteredPosts" :key="post.id" class="bg-white rounded-lg shadow-md overflow-hidden">
+          <!-- Post Header -->
+          <div class="flex items-center justify-between">
+            <!-- Tag Project -->
+            <button v-if="isOwnPortfolio" @click="openTagSelector(post.id)"
+              class="text-sm text-gray-500 hover:text-[#bfdaa4] my-2 mx-2">
+              Tag Project
+            </button>
+
+            <!-- Remove button (right side) -->
+            <button v-if="isOwnPortfolio" @click="removeFromPortfolio(post.id)"
+              class="text-sm text-gray-500 hover:text-[#bfdaa4] flex items-center space-x-1 mx-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Remove</span>
+            </button>
           </div>
-          <button @click="openTagSelector(post.id)" class="text-sm text-gray-500">
-            Tag Project
-          </button>
 
-          <!-- remove from portfolio button (own posts)-->
-          <button v-if="isOwnPortfolio" @click="removeFromPortfolio(post.id)"
-            class="text-sm text-gray-500 hover:text-[#bfdaa4] flex items-center space-x-1 my-2 mr-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>Remove</span>
-          </button>
+          <!-- Post Content -->
+          <RouterLink :to="{ name: 'postview', params: { id: post.id } }">
+            <!-- Post Attachments -->
+            <template v-if="post.attachments.length">
+              <div v-for="attachment in post.attachments" :key="attachment.id">
+                <!-- image -->
+                <img v-if="attachment.get_image" :src="attachment.get_image" class="w-full">
+
+                <!-- video -->
+                <video v-if="attachment.get_video" controls class="w-full">
+                  <source :src="attachment.get_video" type="video/mp4">
+                </video>
+              </div>
+            </template>
+
+            <!-- post body -->
+            <div class="my-3 px-4">{{ post.body }}</div>
+          </RouterLink>
         </div>
+      </div>
 
-        <!-- Post Content -->
-        <RouterLink :to="{ name: 'postview', params: { id: post.id } }">
-          <!-- Post Attachments -->
-          <template v-if="post.attachments.length">
-            <div v-for="attachment in post.attachments" :key="attachment.id">
-              <!-- image -->
-              <img v-if="attachment.get_image" :src="attachment.get_image" class="w-full">
-
-              <!-- video -->
-              <video v-if="attachment.get_video" controls class="w-full">
-                <source :src="attachment.get_video" type="video/mp4">
-              </video>
-            </div>
-          </template>
-
-          <!-- post body -->
-          <div class="my-3">{{ post.body }}</div>
-        </RouterLink>
+      <!-- Gallery View -->
+      <div v-else>
+        <GalleryComponent :propPosts="filteredPosts" />
       </div>
     </div>
+  </div>
 
-    <!-- Tag selector modal -->
-    <div v-if="showTagSelector" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white p-4 rounded-lg max-w-md w-full">
-        <h3 class="font-medium mb-3">Add Project Tag</h3>
+  <!-- Tag selector modal -->
+  <div v-if="showTagSelector" class="fixed inset-0 backdrop-blur-xs bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-4 rounded-lg max-w-md w-full border border-gray-200">
+      <h3 class="font-medium mb-3">Add Project Tag</h3>
 
-        <!-- list -->
-        <div v-if="tags.length === 0" class="text-center py-2 mb-3">
-          <p>No project tags yet</p>
+      <!-- list -->
+      <div v-if="tags.length === 0" class="text-center py-2 mb-3">
+        <p>No project tags yet</p>
+      </div>
+      <div v-else class="mb-4 max-h-60 overflow-y-auto">
+        <div v-for="tag in tags" :key="tag.id" @click="addTagToPost(tag.id)"
+          class="p-2 hover:bg-gray-100 cursor-pointer rounded">
+          {{ tag.name }}
         </div>
-        <div v-else class="mb-4 max-h-60 overflow-y-auto">
-          <div v-for="tag in tags" :key="tag.id" @click="addTagToPost(tag.id)"
-            class="p-2 hover:bg-gray-100 cursor-pointer rounded">
-            {{ tag.name }}
-          </div>
-        </div>
+      </div>
 
-        <!-- new tag -->
-        <div class="mb-4">
-          <input v-model="newTagName" placeholder="New project name" class="p-2 border rounded w-full mb-2" />
-          <button @click="createTag" class="px-3 py-1 bg-green-100 text-green-800 rounded" :disabled="!newTagName">
-            Create & Add
-          </button>
-        </div>
-
-        <div class="flex justify-end">
-          <button @click="showTagSelector = false" class="px-3 py-1 bg-gray-100 rounded">
-            Cancel
-          </button>
-        </div>
+      <div class="flex justify-center">
+        <button @click="showTagSelector = false" class="px-3 py-1 bg-gray-100 rounded">
+          Cancel
+        </button>
       </div>
     </div>
   </div>
@@ -105,9 +198,13 @@
 <script>
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
+import GalleryComponent from '@/components/GalleryComponent.vue'
 
 export default {
   name: 'PortfolioComponent',
+  components: {
+    GalleryComponent
+  },
   setup() {
     const userStore = useUserStore()
     return {
@@ -123,6 +220,10 @@ export default {
       showTagSelector: false,
       tags: [],
       newTagName: '',
+      showTagManager: false,
+      showDeleteTagConfirmModal: false,
+      tagToDelete: null,
+      viewMode: 'list', // default view mode
     }
   },
   computed: {
@@ -168,6 +269,49 @@ export default {
     this.loadTags();
   },
   methods: {
+    confirmDeleteTag(tag) {
+      this.tagToDelete = tag;
+      this.showDeleteTagConfirmModal = true;
+    },
+
+    deleteTag() {
+      if (!this.tagToDelete) return;
+
+      axios.delete(`/api/posts/tags/${this.tagToDelete.id}/delete/`)
+        .then(() => {
+          // Remove the tag from the local array
+          this.tags = this.tags.filter(tag => tag.id !== this.tagToDelete.id);
+
+          // If the deleted tag was selected, reset the selection
+          if (this.selectedTag === this.tagToDelete.id) {
+            this.selectedTag = '';
+          }
+
+          // Close the confirmation modal
+          this.showDeleteTagConfirmModal = false;
+          this.tagToDelete = null;
+
+          // Refresh posts to update the UI
+          this.getPortfolioPosts();
+        })
+        .catch(error => {
+          console.log('Error deleting tag:', error);
+        });
+    },
+
+    createTagOnly() {
+      if (!this.newTagName) return;
+
+      axios.post('/api/posts/newtag/', { name: this.newTagName })
+        .then(response => {
+          // Add to local array
+          this.tags.push(response.data);
+          this.newTagName = '';
+        })
+        .catch(error => {
+          console.log('Error creating tag:', error);
+        });
+    },
     openTagSelector(postId) {
       this.selectedPostId = postId;
       this.showTagSelector = true;
@@ -224,12 +368,20 @@ export default {
       axios
         .post(`/api/posts/${postId}/remove_from_portfolio/`)
         .then(response => {
+          this.removeTagsFromPost(postId);
           // filter out removed posts 
           this.posts = this.posts.filter(post => post.id !== postId)
         })
         .catch(error => {
           console.log('Error removing from portfolio', error)
         })
+    },
+    removeTagsFromPost(postId) {
+      axios
+        .post(`/api/posts/${postId}/remove-all-tags/`)
+        .catch(error => {
+          console.log('Error removing tags from post:', error);
+        });
     }
   }
 }

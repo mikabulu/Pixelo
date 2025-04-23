@@ -279,3 +279,24 @@ def add_tag_to_post(request, post_id, tag_id):
     tag = ProjectTag.objects.get(id=tag_id)
     post.project_tags.add(tag)
     return JsonResponse({'success': True})
+
+@api_view(['POST'])
+def remove_all_tags_from_post(request, post_id):
+    """Remove all project tags from a post"""
+    try:
+        post = Post.objects.get(id=post_id)
+        post.project_tags.clear()
+        return JsonResponse({'success': True})
+    except Post.DoesNotExist:
+        return JsonResponse({'error': 'Post not found'}, status=404)
+    
+@api_view(['DELETE'])
+def delete_tag(request, tag_id):
+    """Delete a project tag"""
+    try:
+        tag = ProjectTag.objects.get(id=tag_id, user=request.user)
+        # Tag will automatically be removed from posts due to the ManyToMany relationship
+        tag.delete()
+        return JsonResponse({'success': True})
+    except ProjectTag.DoesNotExist:
+        return JsonResponse({'error': 'Tag not found'}, status=404)
