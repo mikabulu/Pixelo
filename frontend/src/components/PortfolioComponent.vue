@@ -258,6 +258,7 @@ export default {
       handler(newId, oldId) {
         if (newId !== oldId) {
           this.getPortfolioPosts();
+          this.loadTags();
         }
       },
       immediate: false

@@ -67,19 +67,19 @@
                     <ul
                         class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:border-gray-700 dark:text-gray-400 mt-5">
                         <li class="me-2">
-                            <a href="#" @click.prevent="currentTab = 'feed'"
+                            <a href="#" @click.prevent="changeTab('feed')"
                                 :class="['inline-block p-4 rounded-t-lg', currentTab === 'feed' ? 'text-[#a9c191]' : 'dark:hover:text-black-300']">
                                 Feed
                             </a>
                         </li>
                         <li class="me-2">
-                            <a href="#" @click.prevent="currentTab = 'gallery'"
+                            <a href="#" @click.prevent="changeTab('gallery')"
                                 :class="['inline-block p-4 rounded-t-lg', currentTab === 'gallery' ? 'text-[#a9c191]' : 'dark:hover:text-black-300']">
                                 Gallery
                             </a>
                         </li>
                         <li class="me-2">
-                            <a href="#" @click.prevent="currentTab = 'portfolio'"
+                            <a href="#" @click.prevent="changeTab('portfolio')"
                                 :class="['inline-block p-4 rounded-t-lg', currentTab === 'portfolio' ? 'text-[#a9c191]' : 'dark:hover:text-black-300']">
                                 Portfolio
                             </a>
@@ -98,17 +98,17 @@
                     </div>
                 </div>
 
-                <PostComponent v-for="post in posts" :key="post.id" :post="post" @postDeleted="deletePost" class="mb-5"/>
+                <PostComponent v-for="post in posts" :key="post.id" :post="post" @postDeleted="deletePost" class="mb-5" />
             </div>
 
             <!-- Gallery -->
             <div v-else-if="currentTab === 'gallery'">
-                <GalleryComponent/>
+                <GalleryComponent />
             </div>
 
             <!-- Portfolio -->
             <div v-if="currentTab === 'portfolio'" class="text-center bg-white rounded-lg shadow-md p-4">
-                <PortfolioComponent/>
+                <PortfolioComponent ref="portfolioComponent" />
             </div>
         </div>
     </div>
@@ -166,7 +166,7 @@ export default {
 
     components: {
         PostComponent,
-        GalleryComponent, 
+        GalleryComponent,
         PortfolioComponent
     },
     setup() {
@@ -202,17 +202,46 @@ export default {
                 this.checkFollowStatus();
             },
             immediate: true
+        },
+        '$route': {
+            handler(to) {
+                // check for view param in the URL
+                if (to.query.view === 'portfolio') {
+                    this.currentTab = 'portfolio';
+
+                    // If there's also a tag param, set the selected tag
+                    if (to.query.tag) {
+                        // tell portfolio to select this tag - after rendering the component 
+                        this.$nextTick(() => {
+                            this.$refs.portfolioComponent.selectedTag = to.query.tag;
+                        });
+                    }
+                }
+            },
+            immediate: true
         }
     },
     mounted() {
         this.getFeed()
         this.checkFollowStatus();
-        document.addEventListener('click', this.closeSettingsMenuOutside); //close menu when click outside
-    },
-    beforeUnmount() {
-        document.removeEventListener('click', this.closeSettingsMenuOutside);
     },
     methods: {
+        changeTab(tabName) {
+            this.currentTab = tabName;
+
+            // Update the URL when changing tabs
+            if (tabName === 'portfolio') {
+                this.$router.replace({
+                    query: { ...this.$route.query, view: 'portfolio' }
+                });
+            } else {
+                // Remove the view and tag params when switching to other tabs
+                const query = { ...this.$route.query };
+                delete query.view;
+                delete query.tag;
+                this.$router.replace({ query });
+            }
+        },
         deletePost(id) {
             this.posts = this.posts.filter(post => post.id !== id)
         },
@@ -254,12 +283,6 @@ export default {
         },
         toggleSettingsMenu() {
             this.showSettingsMenu = !this.showSettingsMenu;
-        },
-        //close settings menu when click outside
-        closeSettingsMenuOutside(event) {
-            if (this.$refs.settingsMenu && !this.$refs.settingsMenu.contains(event.target)) {
-                this.showSettingsMenu = false;
-            }
         },
         getFeed() {
             axios

@@ -1,7 +1,7 @@
 <template>
   <div class="w-full bg-white rounded-lg shadow-md p-4 flex flex-col">
     <!-- Post Header -->
-    <div class="mb-6 flex items-center justify-between">
+    <div class="mb-4 flex items-center justify-between">
       <div class="flex items-center space-x-3">
         <img :src="post.created_by.get_avatar" class="w-[40px] rounded-full">
         <p><strong>
@@ -11,6 +11,16 @@
           </strong></p>
       </div>
       <p class="text-gray-600">{{ post.created_at_formatted }} ago</p>
+    </div>
+    <!-- tag! -->
+    <div v-if="post.project_tags && post.project_tags.length > 0" class="flex flex-wrap mb-2">
+      <RouterLink v-for="tag in post.project_tags" :key="tag.id" :to="{
+        name: 'profiles',
+        params: { id: post.created_by.id },
+        query: { view: 'portfolio', tag: tag.id }
+      }" class="text-sm bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1 text-gray-700">
+        {{ tag.name }}
+      </RouterLink>
     </div>
 
     <template v-if="post.attachments.length">
@@ -193,11 +203,17 @@ export default {
     // add/remove from portfolio
     togglePortfolio() {
       if (this.inPortfolio) {
-        // Remove from portfolio
+        // First remove all tags from this post
         axios
-          .post(`/api/posts/${this.post.id}/remove_from_portfolio/`)
+          .post(`/api/posts/${this.post.id}/remove-all-tags/`)
+          .then(() => {
+            // Then remove from portfolio
+            return axios.post(`/api/posts/${this.post.id}/remove_from_portfolio/`);
+          })
           .then(response => {
             this.inPortfolio = false;
+            // Clear the tags array immediately in the frontend
+            this.post.project_tags = [];
             this.$emit('postRemoved', this.post.id);
           })
           .catch(error => {
@@ -215,7 +231,6 @@ export default {
           });
       }
     },
-
     //replace hashtag with clickable link 
     renderHashtags(text) {
       if (!text) return '';
