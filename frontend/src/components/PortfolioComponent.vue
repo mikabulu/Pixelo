@@ -9,7 +9,7 @@
         </option>
       </select>
 
-      <!-- Project management button (only shown for own profile) -->
+      <!-- tag management  -->
       <button v-if="isOwnPortfolio" @click="showTagManager = true"
         class="mt-2 text-sm text-gray-500 hover:text-[#bfdaa4] flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -18,7 +18,6 @@
             d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
         </svg>
-
         Manage Project Tags
       </button>
     </div>
@@ -70,7 +69,7 @@
       <!-- new tag -->
       <div class="mb-4">
         <input v-model="newTagName" placeholder="New tag name" class="p-2 border rounded w-full mb-2" />
-        <button @click="createTagOnly" class="px-3 py-1 bg-green-100 text-green-800 rounded" :disabled="!newTagName">
+        <button @click="createTagOnly" class="px-3 py-1 bg-[#bfdaa4] text-black rounded" :disabled="!newTagName">
           Create Tag
         </button>
       </div>
@@ -118,7 +117,7 @@
       </div>
     </div>
 
-    <!-- Portfolio items - conditional rendering based on view mode -->
+    <!-- Portfolio items  -->
     <div v-else>
       <!-- List View -->
       <div v-if="viewMode === 'list'" class="space-y-4">
@@ -282,16 +281,15 @@ export default {
           // Remove the tag from the local array
           this.tags = this.tags.filter(tag => tag.id !== this.tagToDelete.id);
 
-          // If the deleted tag was selected, reset the selection
+          // if the deleted tag was selected, reset the tag dropdown
           if (this.selectedTag === this.tagToDelete.id) {
             this.selectedTag = '';
           }
 
-          // Close the confirmation modal
           this.showDeleteTagConfirmModal = false;
           this.tagToDelete = null;
 
-          // Refresh posts to update the UI
+          // refresh posts 
           this.getPortfolioPosts();
         })
         .catch(error => {
@@ -304,7 +302,6 @@ export default {
 
       axios.post('/api/posts/newtag/', { name: this.newTagName })
         .then(response => {
-          // Add to local array
           this.tags.push(response.data);
           this.newTagName = '';
         })
