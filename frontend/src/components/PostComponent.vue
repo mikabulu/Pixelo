@@ -18,7 +18,7 @@
         name: 'profiles',
         params: { id: post.created_by.id },
         query: { view: 'portfolio', tag: tag.id }
-      }" class="text-sm bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1 text-gray-700">
+      }" class="text-sm bg-gray-100 hover:bg-[#e8f2d7] rounded-full px-3 py-1 text-gray-700">
         {{ tag.name }}
       </RouterLink>
     </div>
