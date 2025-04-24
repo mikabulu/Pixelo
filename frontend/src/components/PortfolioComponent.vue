@@ -129,7 +129,7 @@
             <!-- Tag Project -->
             <button v-if="isOwnPortfolio" @click="openTagSelector(post.id)"
               class="text-sm text-gray-500 hover:text-[#bfdaa4] my-2 mx-2">
-              Add Project Tag
+              Edit Project Tags
             </button>
 
             <!-- Remove button (right side) -->
@@ -174,7 +174,7 @@
   <!-- Tag selector modal -->
   <div v-if="showTagSelector" class="fixed inset-0 backdrop-blur-xs bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white p-4 rounded-lg max-w-md w-full border border-gray-200">
-      <h3 class="font-medium mb-3">Add Project Tag</h3>
+      <h3 class="font-medium mb-3">Edit Project Tags</h3>
 
       <!-- list -->
       <div v-if="tags.length === 0" class="text-center py-2 mb-3">
@@ -182,15 +182,25 @@
       </div>
       <div v-else class="mb-4 max-h-60 overflow-y-auto">
         <div v-for="tag in tags" :key="tag.id" @click="addTagToPost(tag.id)"
-          class="p-2 hover:bg-gray-100 cursor-pointer rounded">
-          {{ tag.name }}
+          class="p-2 hover:bg-[#e8f2d7] cursor-pointer rounded flex justify-between items-center">
+          <span>{{ tag.name }}</span>
+          <svg v-if="isPostTagged(tag.id)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="size-6 text-[#bfdaa4]">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+
         </div>
       </div>
 
-      <div class="flex justify-center">
+      <div class="flex justify-center gap-2">
+        <button @click="showTagSelector = false" class="px-3 py-1 bg-gray-100 rounded">
+          Done
+        </button>
         <button @click="showTagSelector = false" class="px-3 py-1 bg-gray-100 rounded">
           Cancel
         </button>
+
       </div>
     </div>
   </div>
@@ -225,6 +235,7 @@ export default {
       showDeleteTagConfirmModal: false,
       tagToDelete: null,
       viewMode: 'list', // default view mode
+      selectedPost: null,
     }
   },
   computed: {
@@ -281,7 +292,7 @@ export default {
 
       axios.delete(`/api/posts/tags/${this.tagToDelete.id}/delete/`)
         .then(() => {
-          // Remove the tag from the local array
+          // remove the tag from the local array
           this.tags = this.tags.filter(tag => tag.id !== this.tagToDelete.id);
 
           // if the deleted tag was selected, reset the tag dropdown
@@ -315,9 +326,10 @@ export default {
     openTagSelector(postId) {
       this.selectedPostId = postId;
       this.showTagSelector = true;
+      this.selectedPost = this.posts.find(post => post.id === postId);
     },
     loadTags() {
-      const profileUserId = this.$route.params.id; // <- this is the profile owner's ID
+      const profileUserId = this.$route.params.id; //profile owner id 
       axios.get(`/api/posts/tags/${profileUserId}/`)
         .then(response => {
           this.tags = response.data;
@@ -326,16 +338,47 @@ export default {
           console.log('Error loading tags:', error);
         });
     },
+    isPostTagged(tagId) {
+      if (!this.selectedPost || !this.selectedPost.project_tags) {
+        return false;
+      }
+      return this.selectedPost.project_tags.some(tag => String(tag.id) === String(tagId));
+    },
+
     addTagToPost(tagId) {
-      axios.post(`/api/posts/${this.selectedPostId}/tag/${tagId}/`)
-        .then(() => {
-          this.showTagSelector = false;
-          this.selectedPostId = null;
-          this.getPortfolioPosts(); // refresh posts after adding tag
-        })
-        .catch(error => {
-          console.log('Error adding tag:', error);
-        });
+      // ff the post already has tag, remove it (toggle )
+      if (this.isPostTagged(tagId)) {
+        axios.post(`/api/posts/${this.selectedPostId}/untag/${tagId}/`)
+          .then(() => {
+            if (this.selectedPost && this.selectedPost.project_tags) {
+              this.selectedPost.project_tags = this.selectedPost.project_tags.filter(tag =>
+                String(tag.id) !== String(tagId)
+              );
+            }
+          })
+          .catch(error => {
+            console.log('Error removing tag:', error);
+          });
+      } else {
+        // add tag
+        axios.post(`/api/posts/${this.selectedPostId}/tag/${tagId}/`)
+          .then(() => {
+            // update local post data
+            if (this.selectedPost) {
+              if (!this.selectedPost.project_tags) {
+                this.selectedPost.project_tags = [];
+              }
+              // find the tag to add from the tags array
+              const tagToAdd = this.tags.find(tag => String(tag.id) === String(tagId));
+              if (tagToAdd) {
+                this.selectedPost.project_tags.push(tagToAdd);
+              }
+            }
+          })
+          .catch(error => {
+            console.log('Error adding tag:', error);
+          });
+      }
     },
     createTag() {
       if (!this.newTagName) return;
@@ -389,8 +432,8 @@ export default {
 </script>
 
 <style scoped>
-
 @media screen and (max-width: 428px) {
+
   .portfolio-mng,
   grp-1 {
     flex-direction: column;

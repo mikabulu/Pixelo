@@ -326,3 +326,19 @@ def delete_comment(request, comment_id):
         return JsonResponse({'error': 'Comment not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+# Add to your views (api.py or views.py depending on your project structure)
+@api_view(['POST'])
+def untag_post(request, post_id, tag_id):
+    try:
+        post = Post.objects.get(pk=post_id)
+        tag = ProjectTag.objects.get(pk=tag_id)
+
+        if not post.project_tags.filter(pk=tag.pk).exists():
+            return JsonResponse({'message': 'Tag not associated with post'}, status=400)
+
+        post.project_tags.remove(tag)
+        return JsonResponse({'message': 'Tag removed from post'})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
