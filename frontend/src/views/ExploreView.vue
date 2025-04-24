@@ -4,7 +4,8 @@
             <!--Search Bar -->
             <div class="bg-white border border-gray-200 rounded-full">
                 <form v-on:submit.prevent="submitForm" class="p-2 flex space-x-4 rounded-full">
-                    <input v-model="query" type="search" placeholder = "Search for artists or posts" class="p-3 w-full bg-gray-100 rounded-full">
+                    <input v-model="query" type="search" placeholder="Search for artists or posts"
+                        class="p-3 w-full bg-gray-100 rounded-full">
                     <button class="inline-block py-4 px-6 bg-[#bfdaa4] text-black rounded-full"><svg
                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
@@ -36,7 +37,7 @@
                 </div>
 
                 <!-- Recommendations -->
-                <PostComponent v-else v-for="post in recommendations" :key="post.id" :post="post" class ="mb-4"/>
+                <PostComponent v-else v-for="post in recommendations" :key="post.id" :post="post" class="mb-4" />
 
                 <!-- Separator -->
                 <div v-if="recommendations.length > 0 && posts.length > 0" class="my-6 border-t border-gray-200">
@@ -64,7 +65,7 @@
             </div>
 
             <!--Posts (from search or explore) -->
-            <PostComponent v-for="post in filteredPosts" :key="post.id" :post="post" />
+            <PostComponent v-for="post in posts" :key="post.id" :post="post" />
         </div>
     </div>
 </template>
@@ -97,21 +98,28 @@ export default {
             posts: [],
             recommendations: [],
             loadingRecommendations: false,
-            isSearching: false
-        }
-    },
-    computed: {
-        //don't show posts created by the logged in user in explore 
-        filteredPosts() {
-            return this.posts.filter(post => post.created_by.id !== this.userStore.user.id);
+            isSearching: false,
+            followingIds: []
         }
     },
     mounted() {
+        this.getFollowingList();
         this.getRecommendations();
         this.getExplorePosts();
     },
-
     methods: {
+        getFollowingList() {
+            axios
+                .get(`/api/following/list/${this.userStore.user.id}/`)
+                .then(response => {
+                    // get just IDs 
+                    this.followingIds = response.data.map(user => user.id);
+                    console.log('Following IDs:', this.followingIds);
+                })
+                .catch(error => {
+                    console.log('Error fetching following list:', error);
+                });
+        },
         submitForm() {
             console.log('submitForm', this.query);
             this.isSearching = true;
@@ -135,8 +143,11 @@ export default {
             axios
                 .get('/api/posts/item-recommendations/')
                 .then(response => {
-                    console.log('recommendations:', response.data);
-                    this.recommendations = response.data.filter(post => post.created_by.id !== this.userStore.user.id); // Don't show own posts in recommendations
+                    // filter recommendations posts from self and users followed
+                    this.recommendations = response.data.filter(post =>
+                        post.created_by.id !== this.userStore.user.id &&
+                        !this.followingIds.includes(post.created_by.id)
+                    );
                     this.loadingRecommendations = false;
                 })
                 .catch(error => {
@@ -149,7 +160,11 @@ export default {
                 .get('/api/posts/')
                 .then(response => {
                     if (!this.isSearching) {
-                        this.posts = response.data;
+                        // filter explore posts from self and users followed
+                        this.posts = response.data.filter(post =>
+                            post.created_by.id !== this.userStore.user.id &&
+                            !this.followingIds.includes(post.created_by.id)
+                        );
                     }
                 })
                 .catch(error => {
@@ -167,29 +182,29 @@ export default {
 </script>
 
 <style scoped>
-@media screen and (max-width: 800px){
-  .grid-cols-4 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  
-  .p-4 {
-    padding: 0.5rem;
-  }
-  
-  .gap-4 {
-    gap: 0.5rem;
-  }
-  
+@media screen and (max-width: 800px) {
+    .grid-cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-  .avatar {
-    height: 6rem;
-    width: 6rem;
-  }
-   
-  .text-xs {
-    font-size: 0.65rem;
-  }
-  
-  
+    .p-4 {
+        padding: 0.5rem;
+    }
+
+    .gap-4 {
+        gap: 0.5rem;
+    }
+
+
+    .avatar {
+        height: 6rem;
+        width: 6rem;
+    }
+
+    .text-xs {
+        font-size: 0.65rem;
+    }
+
+
 }
 </style>

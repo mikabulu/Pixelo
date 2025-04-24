@@ -83,7 +83,7 @@ def post_create(request):
 @api_view(['GET'])
 def feed(request):
     """
-    Get posts from users the current user is following
+    get posts from users following
     """
     try:
         # get users followed 
@@ -161,7 +161,6 @@ def get_trends(request):
 
 @api_view(['POST'])
 def add_to_portfolio(request, pk):
-    """Add a post to the user's portfolio"""
     try:
         post = Post.objects.get(pk=pk)
 
@@ -179,7 +178,6 @@ def add_to_portfolio(request, pk):
 
 @api_view(['POST'])
 def remove_from_portfolio(request, pk):
-    """Remove a post from the user's portfolio"""
     try:
         post = Post.objects.get(pk=pk)
         
@@ -200,7 +198,6 @@ def remove_from_portfolio(request, pk):
 
 @api_view(['GET'])
 def get_portfolio(request, id):
-    """Get a user's portfolio posts"""
     try:
         user = User.objects.get(pk=id)
         
@@ -208,7 +205,7 @@ def get_portfolio(request, id):
             portfolio = Portfolio.objects.get(user=user)
             posts = portfolio.posts.all()
             
-            # Use the same serializer format as post_list_profile
+            
             posts_serializer = PostSerializer(posts, many=True, context={'request': request})
             user_serializer = UserSerializer(user)
             
@@ -217,7 +214,7 @@ def get_portfolio(request, id):
                 'user': user_serializer.data
             }, safe=False)
         except Portfolio.DoesNotExist:
-            # Return empty posts list if portfolio doesn't exist
+            #return empty list if portfolio does not exist
             user_serializer = UserSerializer(user)
             return JsonResponse({
                 'posts': [],
@@ -228,7 +225,6 @@ def get_portfolio(request, id):
 
 @api_view(['GET'])
 def is_in_portfolio(request, pk):
-    """Check if a post is in the user's portfolio"""
     try:
         post = Post.objects.get(pk=pk)
         
@@ -290,7 +286,6 @@ def delete_tag(request, tag_id):
     
 @api_view(['DELETE'])
 def delete_comment(request, comment_id):
-    """Delete a comment"""
     try:
         comment = Comment.objects.get(id=comment_id)
         post = Post.objects.filter(comments=comment).first()
