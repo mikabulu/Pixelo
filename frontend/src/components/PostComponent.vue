@@ -10,7 +10,7 @@
             </RouterLink>
           </strong></p>
       </div>
-      <p class="text-gray-600">{{ post.created_at_formatted }} ago</p>
+      <p class="text-gray-600 post-time">{{ post.created_at_formatted }} ago</p>
     </div>
     <!-- tag! -->
     <div v-if="post.project_tags && post.project_tags.length > 0" class="flex flex-wrap mb-2">
@@ -246,6 +246,10 @@ export default {
   .footer svg {
     width: 1.25rem;
     height: 1.25rem;
+  }
+
+  .post-time {
+    font-size: 0.75rem;
   }
 }
 </style>

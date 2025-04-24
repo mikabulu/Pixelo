@@ -2,10 +2,10 @@
     <div class="max-w-7xl mx-auto flex justify-center">
         <div class="w-full max-w-4xl space-y-4">
             <!--Search Bar -->
-            <div class="bg-white border border-gray-200 rounded-lg">
-                <form v-on:submit.prevent="submitForm" class="p-2 flex space-x-4">
-                    <input v-model="query" type="search" placeholder = "Search for artists or posts" class="p-2 w-full bg-gray-100 rounded-lg">
-                    <button class="inline-block py-4 px-6 bg-[#bfdaa4] text-black rounded-lg"><svg
+            <div class="bg-white border border-gray-200 rounded-full">
+                <form v-on:submit.prevent="submitForm" class="p-2 flex space-x-4 rounded-full">
+                    <input v-model="query" type="search" placeholder = "Search for artists or posts" class="p-3 w-full bg-gray-100 rounded-full">
+                    <button class="inline-block py-4 px-6 bg-[#bfdaa4] text-black rounded-full"><svg
                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -167,8 +167,7 @@ export default {
 </script>
 
 <style scoped>
-@media screen and (max-width: 428px) {
-  /* Set to 2 columns for all phones */
+@media screen and (max-width: 800px){
   .grid-cols-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
