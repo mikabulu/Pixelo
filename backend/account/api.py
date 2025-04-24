@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.contrib.auth.forms import PasswordChangeForm
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from .models import User, Follow
+from .serializers import UserSerializer
 
 from .forms import SignupForm, ProfileForm
 
@@ -135,4 +136,25 @@ def edit_password(request):
     else:
         return JsonResponse({'message': form.errors.as_json()}, safe=False)
     
-    
+
+#get followers    
+@api_view(['GET'])
+def followers_list(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        followers = user.get_followers()  
+        serializer = UserSerializer(followers, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    except User.DoesNotExist:
+        return JsonResponse([], safe=False)
+
+# get following list 
+@api_view(['GET'])
+def following_list(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        following = user.get_following()  
+        serializer = UserSerializer(following, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    except User.DoesNotExist:
+        return JsonResponse([], safe=False)

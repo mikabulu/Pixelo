@@ -57,9 +57,12 @@
                     <p class="text-xs text-gray-500">{{ user.account_type }}</p>
                     <p class="text-xs text-500 mt-4">{{ user.bio }}</p>
                     <div class="mt-5 flex space-x-8 justify-around">
-                        <p class="text-xs text-gray-500">{{ followers_count }} {{ followers_count === 1 ? 'follower' :
-                            'followers' }}</p>
-                        <p class="text-xs text-gray-500">{{ following_count }} following</p>
+                        <p @click="showFollowers" class="text-xs text-gray-500 cursor-pointer hover:text-[#bfdaa4]">
+                            {{ followers_count }} {{ followers_count === 1 ? 'follower' : 'followers' }}
+                        </p>
+                        <p @click="showFollowing" class="text-xs text-gray-500 cursor-pointer hover:text-[#bfdaa4]">
+                            {{ following_count }} following
+                        </p>
                         <p class="text-xs text-gray-500">{{ posts.length }} {{ posts.length === 1 ? 'post' : 'posts' }}</p>
                     </div>
 
@@ -109,6 +112,31 @@
             <!-- Portfolio -->
             <div v-if="currentTab === 'portfolio'" class="text-center rounded-lg p-4">
                 <PortfolioComponent ref="portfolioComponent" />
+            </div>
+        </div>
+    </div>
+
+    <!-- show following/followers modal -->
+    <div v-if="showUserListModal" class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50">
+        <div class="bg-white border border-gray-200 rounded-lg max-w-md w-full mx-4">
+            <div class="flex justify-between  p-4">
+                <h3 class="font-semibold">{{ userListTitle }}</h3>
+                <button @click="showUserListModal = false" class="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            <div class="max-h-80 overflow-y-auto">
+                <div v-if="userList.length === 0" class="p-6 text-center text-gray-500">
+                    <p>No {{ userListTitle.toLowerCase() }} found</p>
+                </div>
+                <div v-else>
+                    <div v-for="user in userList" :key="user.id" class="p-4 flex items-center">
+                        <img :src="user.get_avatar"
+                            class="w-10 h-10 rounded-full object-cover mr-3">
+                        <RouterLink :to="{ name: 'profiles', params: { 'id': user.id } }" @click="showUserListModal = false"
+                            class="font-medium hover:text-[#bfdaa4]">
+                            {{ user.name }}
+                        </RouterLink>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -194,6 +222,9 @@ export default {
             mediaType: null,
             fileType: null,
             loadingMessage: null,
+            showUserListModal: false,
+            userListTitle: '',
+            userList: [],
             currentTab: 'feed' // default tab
         }
     },
@@ -229,6 +260,38 @@ export default {
         this.checkFollowStatus();
     },
     methods: {
+        showFollowers() {
+            if (this.followers_count === 0) return;
+
+            this.userListTitle = 'Followers';
+            this.showUserListModal = true;
+            this.userList = [];
+
+            axios
+                .get(`/api/followers/list/${this.$route.params.id}/`)
+                .then(response => {
+                    this.userList = response.data;
+                })
+                .catch(error => {
+                    console.log('Error fetching followers:', error);
+                });
+        },
+        showFollowing() {
+            if (this.following_count === 0) return;
+
+            this.userListTitle = 'Following';
+            this.showUserListModal = true;
+            this.userList = [];
+
+            axios
+                .get(`/api/following/list/${this.$route.params.id}/`)
+                .then(response => {
+                    this.userList = response.data;
+                })
+                .catch(error => {
+                    console.log('Error fetching following:', error);
+                });
+        },
         changeTab(tabName) {
             this.currentTab = tabName;
 
