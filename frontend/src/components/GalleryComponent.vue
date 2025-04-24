@@ -93,24 +93,3 @@ export default {
 }
 </script>
   
-<style scoped>
-.columns-2 {
-  column-count: 2;
-}
-
-@media (min-width: 768px) {
-  .md\:columns-3 {
-    column-count: 3;
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\:columns-4 {
-    column-count: 4;
-  }
-}
-
-.break-inside-avoid {
-  break-inside: avoid;
-}
-</style>

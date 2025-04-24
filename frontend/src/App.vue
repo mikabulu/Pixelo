@@ -1,5 +1,5 @@
 <template>
-  <nav class="py-5 px-8 border-b border-gray-100">
+  <nav class="py-5 px-8 border-b border-gray-100 header">
     <div class="max-w-7xl mx-auto">
       <div class="flex items-center justify-between">
         <div class="menu-left">
@@ -22,8 +22,9 @@
             </RouterLink>
           </div>
 
+          <!--refresh on click (if after search want to go back to explore)-->
           <div class="explore-icon">
-            <RouterLink :to="{ 'name': 'explore' }">
+            <RouterLink :to="{ name: 'explore' }" @click.native="$route.name === 'explore' ? $router.go(0) : null">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -33,6 +34,7 @@
             </RouterLink>
           </div>
         </div>
+
 
         <div class="menu-right">
           <template v-if="userStore.user.isAuthenticated && userStore.user.id">
@@ -49,24 +51,6 @@
     <RouterView />
   </main>
 </template>
-
-<style>
-.feed-icon a,
-.explore-icon a {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-}
-
-a:hover {
-  font-weight: 600;
-}
-
-main {
-  background: #f5f5f5;
-  min-height: 100vh;
-}
-</style>
 
 <script>
 import axios from 'axios'
@@ -106,3 +90,29 @@ export default {
   }
 }
 </script>
+
+<style>
+.feed-icon a,
+.explore-icon a {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+a:hover {
+  font-weight: 600;
+}
+
+main {
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+@media screen and (max-width: 428px) {
+  .header {
+    padding: 0.5rem;
+  }
+
+
+}
+</style>

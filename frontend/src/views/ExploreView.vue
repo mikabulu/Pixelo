@@ -47,9 +47,9 @@
             <!--Users (search results) -->
             <div class="p-4 bg-[#bfdaa4] border border-gray-200 rounded-lg grid grid-cols-4 gap-4 h-72 overflow-auto"
                 v-if="users.length">
-                <div class="w-full min-h-64 bg-white rounded-lg shadow-md pt-6 flex flex-col items-center justify-center"
+                <div class="w-full min-h-64 bg-white rounded-lg shadow-md pt-6 flex flex-col items-center justify-center card"
                     v-for="user in users" v-bind:key="user.id">
-                    <img :src="user.get_avatar" class="h-40 w-40 mb-3 rounded-full object-cover">
+                    <img :src="user.get_avatar" class=" avatar h-40 w-40 mb-3 rounded-full object-cover">
                     <!--send to user profile when name clicked -->
                     <p><strong>
                             <RouterLink :to="{ name: 'profiles', params: { 'id': user.id } }">{{ user.name }}</RouterLink>
@@ -165,3 +165,32 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+@media screen and (max-width: 428px) {
+  /* Set to 2 columns for all phones */
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .p-4 {
+    padding: 0.5rem;
+  }
+  
+  .gap-4 {
+    gap: 0.5rem;
+  }
+  
+
+  .avatar {
+    height: 6rem;
+    width: 6rem;
+  }
+   
+  .text-xs {
+    font-size: 0.65rem;
+  }
+  
+  
+}
+</style>

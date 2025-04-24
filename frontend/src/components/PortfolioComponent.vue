@@ -1,6 +1,6 @@
 <template>
   <!-- PROJECT SELECTION -->
-  <div class="flex justify-between items-center mb-4">
+  <div class="flex justify-between items-center mb-4 portfolio-mng">
     <div class="flex flex-wrap items-center gap-2">
       <select v-model="selectedTag" class="p-2 border rounded-md bg-white w-48 mt-2 text-sm text-gray-700 cursor-pointer">
         <option value="">All Posts</option>
@@ -8,19 +8,21 @@
           {{ tag.name }}
         </option>
       </select>
-
-      <!-- tag management  -->
-      <button v-if="isOwnPortfolio" @click="showTagManager = true"
-        class="mt-2 text-sm text-gray-500 hover:text-[#bfdaa4] flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="size-6 mr-1">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
-        </svg>
-        Manage Project Tags
-      </button>
     </div>
+
+    <!-- tag management  -->
+    <button v-if="isOwnPortfolio" @click="showTagManager = true"
+      class="mt-2 text-sm text-gray-500 hover:text-[#bfdaa4] flex items-center mng-tag">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="size-6 mr-1">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+      </svg>
+      Manage Project Tags
+    </button>
+
+
 
     <!-- View toggle -->
     <div class="flex bg-[#bfdaa4] rounded-md p-1">
@@ -385,3 +387,16 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+@media screen and (max-width: 428px) {
+  .portfolio-mng,
+  grp-1 {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+}
+</style>

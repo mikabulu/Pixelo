@@ -40,14 +40,14 @@
                 <!-- Follow button (other users) -->
                 <button v-if="userStore.user.id !== user.id"
                     :class="isFollowing ? 'bg-gray-300 hover:bg-gray-400' : 'bg-[#bfdaa4] hover:bg-[#a9c191]'"
-                    class="absolute top-4 right-4 text-black py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                    class="absolute top-4 right-4 text-black py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-black unfollow-btn"
                     @click="toggleFollow">
                     {{ isFollowing ? 'Unfollow' : 'Follow' }}
                 </button>
 
                 <!-- Add Post (self)-->
                 <button v-if="userStore.user.id === user.id" @click="showAddPostModal = true"
-                    class="absolute top-4 right-4 bg-[#bfdaa4] text-black py-2 px-4 rounded-md hover:bg-[#a9c191] focus:outline-none focus:ring-2 focus:ring-black">
+                    class="absolute top-4 right-4 bg-[#bfdaa4] text-black py-2 px-4 rounded-md hover:bg-[#a9c191] focus:outline-none focus:ring-2 focus:ring-black add-post-btn">
                     Add Post
                 </button>
 
@@ -409,4 +409,13 @@ export default {
 </script>
   
 
-<style scoped></style>
+<style scoped>
+@media screen and (min-width: 375px) and (max-width: 428px) {
+    .add-post-btn, .unfollow-btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        top: 0.75rem;
+        right: 0.75rem;
+    }
+}
+</style>
