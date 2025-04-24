@@ -65,17 +65,7 @@ def post_create(request):
         if attachment_form.is_valid():
             attachment = attachment_form.save(commit=False)
             attachment.created_by = request.user
-            
-            # Handle video files with special considerations
-            if 'video' in request.FILES:
-                try:
-                    # Apply video-specific options when saving
-                    attachment.save()
-                except Exception as e:
-                    return JsonResponse({'error': str(e)}, status=400)
-            else:
-                # Normal save for images
-                attachment.save()
+            attachment.save()
     
     if form.is_valid():
         post = form.save(commit=False)
@@ -282,7 +272,6 @@ def add_tag_to_post(request, post_id, tag_id):
 
 @api_view(['POST'])
 def remove_all_tags_from_post(request, post_id):
-    """Remove all project tags from a post"""
     try:
         post = Post.objects.get(id=post_id)
         post.project_tags.clear()
@@ -292,16 +281,13 @@ def remove_all_tags_from_post(request, post_id):
     
 @api_view(['DELETE'])
 def delete_tag(request, tag_id):
-    """Delete a project tag"""
     try:
         tag = ProjectTag.objects.get(id=tag_id, user=request.user)
-        # Tag will automatically be removed from posts due to the ManyToMany relationship
         tag.delete()
         return JsonResponse({'success': True})
     except ProjectTag.DoesNotExist:
         return JsonResponse({'error': 'Tag not found'}, status=404)
     
-# Add to your api.py
 @api_view(['DELETE'])
 def delete_comment(request, comment_id):
     """Delete a comment"""
@@ -309,16 +295,14 @@ def delete_comment(request, comment_id):
         comment = Comment.objects.get(id=comment_id)
         post = Post.objects.filter(comments=comment).first()
         
-        # Check if user is authorized to delete this comment
+        # check if user is authorised to delete
         if request.user.id != comment.created_by.id and request.user.id != post.created_by.id:
             return JsonResponse({'error': 'Not authorized'}, status=403)
         
-        # Decrement the comment count on the post
         post.comments.remove(comment)
         post.comments_count = post.comments_count - 1
         post.save()
         
-        # Delete the comment
         comment.delete()
         
         return JsonResponse({'success': True})
@@ -326,8 +310,7 @@ def delete_comment(request, comment_id):
         return JsonResponse({'error': 'Comment not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-    
-# Add to your views (api.py or views.py depending on your project structure)
+ 
 @api_view(['POST'])
 def untag_post(request, post_id, tag_id):
     try:

@@ -7,7 +7,7 @@
             alt="Post image" />
           <video v-else-if="post.attachments[0]?.get_video" controls class="w-full h-auto block">
             <source :src="post.attachments[0].get_video" type="video/mp4" />
-            Your browser does not support the video tag.
+            Your browser does not support the video.
           </video>
         </RouterLink>
       </div>

@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import HomeView from '../views/HomeView.vue'
 import FeedView from '../views/FeedView.vue'
 import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
@@ -12,12 +11,6 @@ import EditProfileView from '../views/EditProfileView.vue'
 import EditPasswordView from '../views/EditPasswordView.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: HomeView,
-    meta: { requiresAuth: true } //authorised access only 
-  },
   {
     path: '/login',
     name: 'login',
@@ -70,12 +63,6 @@ const routes = [
     path: '/hashtags/:id',
     name: 'hashtagview',
     component: HashtagView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/about',
-    name: 'about',
-    component: () => import('../views/AboutView.vue'),
     meta: { requiresAuth: true }
   },
   {

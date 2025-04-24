@@ -4,7 +4,7 @@
         <div class="grid grid-cols-1 gap-4">
 
             <!-- Profile Container -->
-            <div class="w-full min-h-64 bg-white rounded-lg shadow-md pt-6 relative"> <!-- 'relative' for positioning -->
+            <div class="w-full min-h-64 bg-white rounded-lg shadow-md pt-6 relative">
                 <!-- settings -->
                 <div v-if="userStore.user.id === user.id" class="absolute top-4 left-4 settings-menu-container">
                     <div class="relative">
@@ -142,7 +142,10 @@
                             Upload Media
                         </label>
                     </div>
-                    <button class="inline-block py-4 px-6 bg-[#bfdaa4] text-white rounded-lg">Post</button>
+                    <button :disabled="!body.trim()"
+                        class="inline-block py-4 px-6 bg-[#bfdaa4] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:opacity-50">
+                        Post
+                    </button>
                 </div>
             </form>
         </div>
@@ -209,7 +212,7 @@ export default {
                 if (to.query.view === 'portfolio') {
                     this.currentTab = 'portfolio';
 
-                    // If there's also a tag param, set the selected tag
+                    // if there's also tag param set selected tag
                     if (to.query.tag) {
                         // tell portfolio to select this tag - after rendering the component 
                         this.$nextTick(() => {
@@ -411,7 +414,9 @@ export default {
 
 <style scoped>
 @media screen and (min-width: 375px) and (max-width: 428px) {
-    .add-post-btn, .unfollow-btn {
+
+    .add-post-btn,
+    .unfollow-btn {
         font-size: 0.75rem;
         padding: 0.5rem 0.75rem;
         top: 0.75rem;

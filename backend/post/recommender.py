@@ -11,7 +11,7 @@ def get_item_based_recommendations(user, max_recommendations=5):
     if not user_liked_posts:
         return []
     
-    # simple dictionary of post: list of all users who liked it
+    # dictionary of post: list of all users who liked it
     post_to_users = {}
     for post in Post.objects.filter(likes_count__gt=0):
         post_to_users[post.id] = set(Like.objects.filter(post=post).values_list('created_by_id', flat=True))
@@ -40,9 +40,20 @@ def get_item_based_recommendations(user, max_recommendations=5):
                         post_scores[candidate_post_id] = 0
                     post_scores[candidate_post_id] += similarity
     
-    # get the top-scoring posts
-    top_posts = sorted(post_scores.items(), key=lambda x: x[1], reverse=True)[:max_recommendations]
+    # add post id and score to array for sorting
+    sorted_posts = []
+    for post_id, score in post_scores.items():
+        sorted_posts.append((post_id, score))
+
+    # sort the list based on the score in descending order
+    sorted_posts.sort(key=lambda x: x[1], reverse=True)
+
+    # select only top max recommended posts 
+    top_posts = sorted_posts[:max_recommendations]
+
+    # extract just post IDs from the sorted list
     recommended_post_ids = [post_id for post_id, _ in top_posts]
     
     return Post.objects.filter(id__in=recommended_post_ids)
+
 

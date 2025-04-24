@@ -36,7 +36,7 @@
                 </div>
 
                 <!-- Recommendations -->
-                <PostComponent v-else v-for="post in recommendations" :key="post.id" :post="post" />
+                <PostComponent v-else v-for="post in recommendations" :key="post.id" :post="post" class ="mb-4"/>
 
                 <!-- Separator -->
                 <div v-if="recommendations.length > 0 && posts.length > 0" class="my-6 border-t border-gray-200">
@@ -136,7 +136,7 @@ export default {
                 .get('/api/posts/item-recommendations/')
                 .then(response => {
                     console.log('recommendations:', response.data);
-                    this.recommendations = response.data;
+                    this.recommendations = response.data.filter(post => post.created_by.id !== this.userStore.user.id); // Don't show own posts in recommendations
                     this.loadingRecommendations = false;
                 })
                 .catch(error => {

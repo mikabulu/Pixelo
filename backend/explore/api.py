@@ -15,7 +15,7 @@ def search(request):
     users_serializer = UserSerializer(users, many=True)
 
     #search for posts
-    posts = Post.objects.filter(body__icontains=query).exclude(created_by=request.user) #probably will remove searching posts 
+    posts = Post.objects.filter(body__icontains=query).exclude(created_by=request.user) 
     posts_serializer = PostSerializer(posts, many=True)
     return JsonResponse({
         'users': users_serializer.data, 
