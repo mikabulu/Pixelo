@@ -124,18 +124,12 @@
                 <button @click="showUserListModal = false" class="text-gray-500 hover:text-gray-700">✕</button>
             </div>
             <div class="max-h-80 overflow-y-auto">
-                <div v-if="userList.length === 0" class="p-6 text-center text-gray-500">
-                    <p>No {{ userListTitle.toLowerCase() }} found</p>
-                </div>
-                <div v-else>
-                    <div v-for="user in userList" :key="user.id" class="p-4 flex items-center">
-                        <img :src="user.get_avatar"
-                            class="w-10 h-10 rounded-full object-cover mr-3">
-                        <RouterLink :to="{ name: 'profiles', params: { 'id': user.id } }" @click="showUserListModal = false"
-                            class="font-medium hover:text-[#bfdaa4]">
-                            {{ user.name }}
-                        </RouterLink>
-                    </div>
+                <div v-for="user in userList" :key="user.id" class="p-4 flex items-center">
+                    <img :src="user.get_avatar" class="w-10 h-10 rounded-full object-cover mr-3">
+                    <RouterLink :to="{ name: 'profiles', params: { 'id': user.id } }" @click="showUserListModal = false"
+                        class="font-medium hover:text-[#bfdaa4]">
+                        {{ user.name }}
+                    </RouterLink>
                 </div>
             </div>
         </div>
