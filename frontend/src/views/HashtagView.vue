@@ -62,7 +62,7 @@ export default {
             this.isLoading = true
 
             axios
-                .get(`/api/posts/?trend=${this.$route.params.id}`)
+                .get(`/api/posts/?hashtag=${this.$route.params.id}`)
                 .then(response => {
                     console.log('Feed data:', response.data)
                     this.posts = response.data

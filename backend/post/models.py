@@ -76,7 +76,7 @@ class Post(models.Model):
         self.attachments.all().delete()
         super().delete(*args, **kwargs)
 
-class Trend(models.Model):
+class Hashtag(models.Model):
     hashtag = models.CharField(max_length=255)
     occurences = models.IntegerField()
 

@@ -16,8 +16,6 @@
                 </form>
             </div>
 
-            <!--Trends Bar -->
-            <TrendsComponent />
 
             <!-- Recommendations Section (when not searching) -->
             <div v-if="!isSearching" class="w-full">
@@ -73,15 +71,13 @@
 <script>
 import axios from 'axios'
 import PostComponent from '@/components/PostComponent.vue'
-import TrendsComponent from '@/components/TrendsComponent.vue'
 import { useUserStore } from '@/stores/user'
 
 export default {
     name: 'ExploreView',
 
     components: {
-        PostComponent,
-        TrendsComponent
+        PostComponent
     },
     setup() {
         const userStore = useUserStore()

@@ -46,7 +46,7 @@
   </div>
 
   <!-- Tag Manager Modal -->
-  <div v-if="showTagManager" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div v-if="showTagManager" class="fixed inset-0  backdrop-blur-xs bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white p-4 rounded-lg max-w-md w-full">
       <h3 class="font-medium mb-4">Manage Project Tags</h3>
 
@@ -171,7 +171,7 @@
     </div>
   </div>
 
-  <!-- Tag selector modal -->
+  <!-- edit project tags modal  -->
   <div v-if="showTagSelector" class="fixed inset-0 backdrop-blur-xs bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white p-4 rounded-lg max-w-md w-full border border-gray-200">
       <h3 class="font-medium mb-3">Edit Project Tags</h3>

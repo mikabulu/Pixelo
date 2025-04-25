@@ -1,4 +1,4 @@
-from .models import Post, Comment, Trend, PostAttachment, Portfolio
+from .models import Post, Comment, Hashtag, PostAttachment, Portfolio
 from account.serializers import UserSerializer
 from rest_framework import serializers
 
@@ -47,9 +47,9 @@ class PostDetailSerializer(serializers.ModelSerializer):
         model = Post
         fields = ('id', 'body', 'created_by', 'created_at_formatted','likes_count', 'comments', 'comments_count', 'attachments') 
 
-class TrendSerializer(serializers.ModelSerializer):
+class HashtagSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Trend
+        model = Hashtag
         fields = ('id', 'hashtag', 'occurences')
 
 

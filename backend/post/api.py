@@ -1,6 +1,6 @@
 from django.http import JsonResponse
-from .serializers import PostSerializer, PostDetailSerializer, CommentSerializer, TrendSerializer, PortfolioSerializer
-from .models import Post, Like, Comment, Trend, Portfolio, ProjectTag
+from .serializers import PostSerializer, PostDetailSerializer, CommentSerializer, PortfolioSerializer
+from .models import Post, Like, Comment, Portfolio, ProjectTag, Hashtag
 from .forms import PostForm, AttachmentForm
 from rest_framework.decorators import api_view
 from account.models import User
@@ -35,9 +35,9 @@ def post_delete(request, pk):
 @api_view(['GET'])
 def post_list(request):
     posts = Post.objects.all()
-    trend = request.GET.get('trend', '')
-    if trend:
-        posts = posts.filter(body__icontains='#' + trend)
+    hashtag = request.GET.get('hashtag', '')
+    if hashtag:
+        posts = posts.filter(body__icontains='#' + hashtag)
 
     serializer = PostSerializer(posts, many=True)
     return JsonResponse(serializer.data, safe=False)
@@ -151,12 +151,6 @@ def post_comment(request, pk):
 
     serializer = CommentSerializer(comment)
 
-    return JsonResponse(serializer.data, safe=False)
-
-@api_view(['GET'])
-def get_trends(request):
-    trends = Trend.objects.all()
-    serializer = TrendSerializer(trends, many=True)
     return JsonResponse(serializer.data, safe=False)
 
 @api_view(['POST'])

@@ -66,11 +66,17 @@ export default {
     '$route.params.id': {
       handler(newId, oldId) {
         if (newId !== oldId) {
-          this.fetchPosts() //watch for route changes 
+          this.fetchPosts() 
         }
       },
       immediate: false
-    }
+    },
+    propPosts: { //filter posts (dropdown in portfoliocomponent )
+    handler(newValue) {
+      this.posts = newValue;
+    },
+    deep: true
+  }
   },
   methods: {
     fetchPosts() {
