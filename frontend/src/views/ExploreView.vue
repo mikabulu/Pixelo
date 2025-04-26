@@ -110,14 +110,12 @@ export default {
                 .then(response => {
                     // get just IDs 
                     this.followingIds = response.data.map(user => user.id);
-                    console.log('Following IDs:', this.followingIds);
                 })
                 .catch(error => {
                     console.log('Error fetching following list:', error);
                 });
         },
         submitForm() {
-            console.log('submitForm', this.query);
             this.isSearching = true;
 
             axios
@@ -125,7 +123,6 @@ export default {
                     query: this.query
                 })
                 .then(response => {
-                    console.log('response:', response.data);
                     this.users = response.data.users;
                     this.posts = response.data.posts;
                 })

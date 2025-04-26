@@ -39,13 +39,12 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('id', 'body', 'created_at_formatted', 'created_by')
 
-class PostDetailSerializer(serializers.ModelSerializer):
-    created_by = UserSerializer(read_only=True)
+class PostViewSerializer(PostSerializer):
     comments = CommentSerializer(many=True, read_only=True)
-    attachments = PostAttachmentSerializer(read_only = True, many=True)
     class Meta:
         model = Post
-        fields = ('id', 'body', 'created_by', 'created_at_formatted','likes_count', 'comments', 'comments_count', 'attachments') 
+        fields = ('id', 'body', 'created_by', 'created_at_formatted', 'likes_count', 
+                 'comments', 'comments_count', 'attachments', 'is_in_portfolio', 'project_tags')
 
 class HashtagSerializer(serializers.ModelSerializer):
     class Meta:

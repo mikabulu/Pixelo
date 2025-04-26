@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from .serializers import PostSerializer, PostDetailSerializer, CommentSerializer, PortfolioSerializer
+from .serializers import PostSerializer, PostViewSerializer, CommentSerializer, PortfolioSerializer
 from .models import Post, Like, Comment, Portfolio, ProjectTag, Hashtag
 from .forms import PostForm, AttachmentForm
 from rest_framework.decorators import api_view
@@ -134,10 +134,10 @@ def post_is_liked(request, pk):
         return JsonResponse({'error': e})
 
 @api_view(['GET'])
-def post_detail(request, pk):
+def post_view(request, pk):
     post = Post.objects.get(pk=pk)
     return JsonResponse({
-        'post': PostDetailSerializer(post).data
+        'post': PostViewSerializer(post).data
     })
 
 @api_view(['POST'])

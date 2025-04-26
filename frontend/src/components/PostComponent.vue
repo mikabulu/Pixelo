@@ -12,6 +12,7 @@
       </div>
       <p class="text-gray-600 post-time">{{ post.created_at_formatted }} ago</p>
     </div>
+    
     <!-- tag! -->
     <div v-if="post.project_tags && post.project_tags.length > 0" class="flex flex-wrap mb-2">
       <RouterLink v-for="tag in post.project_tags" :key="tag.id" :to="{
