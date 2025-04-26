@@ -1,7 +1,5 @@
-<!-- CommentComponent.vue -->
 <template>
   <div class="w-full bg-white rounded-lg shadow-md p-4 flex flex-col">
-    <!-- Post Header -->
     <div class="mb-6 flex items-center justify-between">
       <div class="flex items-center space-x-3">
         <img :src="comment.created_by.get_avatar" class="w-[40px] rounded-full">
