@@ -164,7 +164,7 @@
                             Upload Media
                         </label>
                     </div>
-                    <button :disabled="!body.trim()"
+                    <button :disabled="!(body.trim() || mediaUploaded)"
                         class="inline-block py-4 px-6 bg-[#bfdaa4] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:opacity-50">
                         Post
                     </button>
@@ -219,6 +219,7 @@ export default {
             showUserListModal: false,
             userListTitle: '',
             userList: [],
+            mediaUploaded: false,
             currentTab: 'feed' // default tab
         }
     },
@@ -313,6 +314,7 @@ export default {
             if (!file) return;
 
             this.fileType = file.type;
+            this.mediaUploaded = true;
 
             // check file size 
             const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB in bytes
