@@ -21,7 +21,7 @@
 
                 <!-- Form Section -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
                     <input type="text" v-model="form.name"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#bfdaa4]">
                 </div>
@@ -130,8 +130,13 @@ export default {
                             })
                             this.$router.back() //back to profile page
                             this.userStore.fetchUserInfo() //fetch user info to update store (for avatar on header)
-                        } else {
-                            this.errors.push('Email already exists')
+                        } else if (response.data.message === 'error') {
+                            // if backend sends multiple errors
+                            if (Array.isArray(response.data.errors)) {
+                                this.errors = response.data.errors
+                            } else {
+                                this.errors.push('An unknown error occurred')
+                            }
                         }
                     })
                     .catch(error => {

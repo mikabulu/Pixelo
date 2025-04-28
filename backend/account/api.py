@@ -116,8 +116,13 @@ def logout(request):
 def edit_profile(request):
     user = request.user
     email = request.data.get('email')
+    errors = []
     if User.objects.filter(email=request.data.get('email')).exclude(id=user.id).exists():
-        return JsonResponse({'message': 'email already exists'})
+        errors.append('Email already exists')
+    if User.objects.filter(name=request.data.get('name')).exclude(id=user.id).exists():
+        errors.append('Username already exists')
+    if errors:
+        return JsonResponse({'message': 'error', 'errors': errors})
     else: 
         print(request.FILES)
         print(request.POST)

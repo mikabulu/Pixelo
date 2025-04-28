@@ -43,7 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
-    name = models.CharField(max_length=255, blank=True, default='')
+    name = models.CharField(max_length=255, blank=True, default='', unique=True)
     avatar = models.ImageField(upload_to='avatars', blank=True, null=True)
     bio = models.TextField(blank=True, default='')
     account_type = models.CharField(
