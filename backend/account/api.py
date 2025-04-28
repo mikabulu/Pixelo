@@ -119,7 +119,7 @@ def edit_profile(request):
     errors = []
     if User.objects.filter(email=request.data.get('email')).exclude(id=user.id).exists():
         errors.append('Email already exists')
-    if User.objects.filter(name=request.data.get('name')).exclude(id=user.id).exists():
+    if User.objects.filter(name__iexact=request.data.get('name')).exclude(id=user.id).exists():
         errors.append('Username already exists')
     if errors:
         return JsonResponse({'message': 'error', 'errors': errors})
