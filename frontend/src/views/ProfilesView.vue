@@ -314,7 +314,7 @@ export default {
             if (!file) return;
 
             this.fileType = file.type;
-            this.mediaUploaded = true;
+            this.mediaUploaded = true; //allows captionlesss posts 
 
             // check file size 
             const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB in bytes
