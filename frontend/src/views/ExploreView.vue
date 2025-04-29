@@ -134,7 +134,7 @@ export default {
             this.loadingRecommendations = true;
 
             axios
-                .get('/api/posts/item-recommendations/')
+                .get('/api/posts/recommendations/')
                 .then(response => {
                     // filter recommendations posts from self and users followed
                     this.recommendations = response.data.filter(post =>

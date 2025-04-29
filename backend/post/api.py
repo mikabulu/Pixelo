@@ -7,7 +7,7 @@ from account.models import User
 from account.serializers import UserSerializer
 import cloudinary
 from cloudinary.uploader import destroy 
-from .recommender import get_item_based_recommendations
+from .recommender import get_recommendations
 
 @api_view(['DELETE'])
 def post_delete(request, pk):
@@ -233,8 +233,8 @@ def is_in_portfolio(request, pk):
         return JsonResponse({'error': 'Post not found'}, status=404)
 
 @api_view(['GET'])
-def item_based_recommendations(request, limit=5):
-    recommended_posts = get_item_based_recommendations(request.user, max_recommendations=limit)
+def recommendations(request, limit=5):
+    recommended_posts = get_recommendations(request.user, max_recommendations=limit)
     serializer = PostSerializer(recommended_posts, many=True, context={'request': request})
     return JsonResponse(serializer.data, safe=False)
 
