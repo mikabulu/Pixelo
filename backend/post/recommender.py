@@ -16,9 +16,9 @@ def get_recommendations(user, max_recommendations):
     #only consider posts with at least one like 
     for post in Post.objects.filter(likes_count__gt=0):
         post_to_users[post.id] = set(Like.objects.filter(post=post).values_list('created_by_id', flat=True))
-    
-    # similarity score for each candidate post (new posts not liked by user)
-    # dictionary of post to similarity score: key: post ID, value: score
+
+    # dictionary of candidate post (new post not liked by user) to 
+    # similarity score: key: post ID, value: score
     post_scores = {}
     for candidate_post_id, users_who_liked_candidate in post_to_users.items():
         # skip posts the user already liked

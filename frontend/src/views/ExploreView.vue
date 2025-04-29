@@ -38,7 +38,7 @@
                 <PostComponent v-else v-for="post in recommendations" :key="post.id" :post="post" class="mb-4" />
 
                 <!-- Separator -->
-                <div v-if="recommendations.length > 0 && posts.length > 0" class="my-6 border-t border-gray-200">
+                <div class="my-6 border-t border-gray-200">
                     <h2 class="font-semibold text-lg mt-6 mb-4">Explore More</h2>
                 </div>
             </div>
