@@ -3,7 +3,7 @@ from account.models import User
 from account.serializers import UserSerializer
 from post.models import Post
 from post.serializers import PostSerializer
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view
 
 @api_view(['POST'])
 def search(request):
