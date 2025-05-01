@@ -39,7 +39,6 @@ export default {
   data() {
     return {
       posts: [],
-      loading: false
     }
   },
 
@@ -80,7 +79,6 @@ export default {
   },
   methods: {
     fetchPosts() {
-      this.loading = true
 
       const userId = this.$route.params.id
 
@@ -88,11 +86,9 @@ export default {
         .get(`/api/posts/profiles/${userId}/`)
         .then(response => {
           this.posts = response.data.posts
-          this.loading = false
         })
         .catch(error => {
           console.error('Error fetching posts for gallery:', error)
-          this.loading = false
         })
     }
   }

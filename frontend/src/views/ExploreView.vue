@@ -23,13 +23,8 @@
                     <h2 class="font-semibold text-lg">Recommended For You</h2>
                 </div>
 
-                <!-- Loading indicator -->
-                <div v-if="loadingRecommendations" class="text-center py-4">
-                    <p>Loading recommendations...</p>
-                </div>
-
                 <!-- No recommendations message -->
-                <div v-else-if="recommendations.length === 0" class="bg-white rounded-lg shadow p-6 text-center">
+                <div v-if="recommendations.length === 0" class="bg-white rounded-lg shadow p-6 text-center">
                     <p class="text-gray-500 mb-2">No recommendations available</p>
                     <p class="text-gray-400 text-sm">Like more posts to get personalised recommendations</p>
                 </div>
@@ -93,7 +88,6 @@ export default {
             users: [],
             posts: [],
             recommendations: [],
-            loadingRecommendations: false,
             isSearching: false,
             followingIds: []
         }
@@ -131,7 +125,6 @@ export default {
                 });
         },
         getRecommendations() {
-            this.loadingRecommendations = true;
 
             axios
                 .get('/api/posts/recommendations/')
@@ -141,11 +134,9 @@ export default {
                         post.created_by.id !== this.userStore.user.id &&
                         !this.followingIds.includes(post.created_by.id)
                     );
-                    this.loadingRecommendations = false;
                 })
                 .catch(error => {
                     console.log('error getting recommendations:', error);
-                    this.loadingRecommendations = false;
                 });
         },
         getExplorePosts() {

@@ -105,15 +105,9 @@
 
   <!-- List/Gallery view toggle -->
   <div>
-    <!-- Loading message -->
-    <div v-if="loading" class="w-full bg-white rounded-lg shadow-md p-4 mb-4 text-center">
-      <div class="flex items-center justify-center py-4">
-        <span>Loading portfolio...</span>
-      </div>
-    </div>
 
     <!-- empty portfolio message-->
-    <div v-else-if="posts.length === 0" class="w-full bg-white rounded-lg p-2 mb-4 text-center">
+    <div v-if="posts.length === 0" class="w-full bg-white rounded-lg p-2 mb-4 text-center">
       <div class="flex flex-col items-center justify-center py-8">
         <p class="text-gray-500 mb-2">No portfolio items yet</p>
       </div>
@@ -225,7 +219,6 @@ export default {
   data() {
     return {
       posts: [],
-      loading: true,
       selectedTag: '',
       selectedPostId: null,
       showTagSelector: false,
@@ -391,17 +384,14 @@ export default {
         });
     },
     getPortfolioPosts() {
-      this.loading = true
       axios
         .get(`/api/posts/portfolio/${this.$route.params.id}/`)
         .then(response => {
           console.log('Posts with tags:', response.data.posts);
           this.posts = response.data.posts
-          this.loading = false
         })
         .catch(error => {
           console.log('Error loading portfolio posts', error)
-          this.loading = false
         })
     },
     removeFromPortfolio(postId) {
