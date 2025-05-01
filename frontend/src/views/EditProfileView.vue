@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center justify-center bg-gray-100">
         <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-            <h1 class="text-2xl font-bold text-center mb-8">Edit Profile </h1>
+            <h1 class="text-2xl font-bold text-center mb-8 font-mono">Edit Profile </h1>
 
             <!-- Edit Avatar -->
             <form class="space-y-6" v-on:submit.prevent="submitForm">
@@ -13,7 +13,7 @@
                     <div class="justify-self-center">
                         <label class="block text-sm font-medium text-gray-700 mb-2 justify-self-center">Avatar</label>
                         <label class="custom-file-upload inline-block py-2 px-2 bg-gray-600 text-white rounded-lg">
-                            <input type="file" ref="file" @change="onFileChange" />
+                            <input type="file" ref="file" @change="onFileChange" accept="image/*" />
                             Upload Image
                         </label>
                     </div>
