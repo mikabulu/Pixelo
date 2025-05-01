@@ -247,13 +247,9 @@ export default {
       if (!this.selectedTag) {
         return this.posts;
       }
-
-      console.log('Selected tag:', this.selectedTag);
-      console.log('Posts:', this.posts);
       return this.posts.filter(post => {
-        console.log('Checking post:', post.id, 'tags:', post.project_tags);
         return post.project_tags &&
-          post.project_tags.some(tag => String(tag.id) === String(this.selectedTag));
+          post.project_tags.some(tag => String(tag.id) === String(this.selectedTag)); //check if tag is in post
       });
     }
   },

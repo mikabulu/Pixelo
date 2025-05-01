@@ -1,4 +1,4 @@
-from .models import Post, Comment, Hashtag, PostAttachment, Portfolio
+from .models import Post, Comment, PostAttachment, Portfolio
 from account.serializers import UserSerializer
 from rest_framework import serializers
 
@@ -45,12 +45,6 @@ class PostViewSerializer(PostSerializer):
         model = Post
         fields = ('id', 'body', 'created_by', 'created_at_formatted', 'likes_count', 
                  'comments', 'comments_count', 'attachments', 'is_in_portfolio', 'project_tags')
-
-class HashtagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Hashtag
-        fields = ('id', 'hashtag', 'occurences')
-
 
 
 class PortfolioSerializer(serializers.ModelSerializer):

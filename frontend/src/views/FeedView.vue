@@ -53,7 +53,6 @@ export default {
             axios
                 .get('/api/posts/feed/')
                 .then(response => {
-                    console.log('Feed data:', response.data)
                     this.posts = response.data
                     this.isLoading = false
                 })

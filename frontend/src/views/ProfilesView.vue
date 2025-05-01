@@ -25,10 +25,6 @@
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#e8f2d7] cursor-pointer">
                                 Edit Profile
                             </RouterLink>
-                            <RouterLink to="/profile/editpassword"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#e8f2d7] cursor-pointer">
-                                Change Password
-                            </RouterLink>
                             <div @click="logout"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#e8f2d7] cursor-pointer">
                                 Logout
@@ -101,7 +97,8 @@
                     </div>
                 </div>
 
-                <PostComponent v-for="post in posts" :key="post.id" :post="post" @postDeleted="deletePost" class="mb-5" />
+                <PostComponent v-for="post in posts" :key="post.id" :post="post" 
+                @postDeleted="deletePost" class="mb-5" />
             </div>
 
             <!-- Gallery -->
@@ -318,8 +315,14 @@ export default {
 
             // check file size 
             const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+            const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 100MB in bytes
             if (file.type.startsWith('video/') && file.size > MAX_VIDEO_SIZE) {
-                alert(`Video is too large. Please select a video smaller than ${MAX_VIDEO_SIZE / (1024 * 1024)}MB.`);
+                alert('Video is too large. Please select a video 100MB or less');
+                e.target.value = ''; // clear file input
+                return;
+            }
+            if (file.type.startsWith('image/') && file.size > MAX_IMAGE_SIZE) {
+                alert('Image is too large. Please select an image 10MB or less');
                 e.target.value = ''; // clear file input
                 return;
             }
@@ -443,7 +446,7 @@ export default {
             axios
                 .post('/api/posts/create/', formData, {
                     headers: {
-                        'Content-Type': 'multipart/form-data'
+                        'Content-Type': 'multipart/form-data' //text and data files 
                     }
                 })
                 .then(response => { //clear 

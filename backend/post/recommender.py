@@ -29,7 +29,7 @@ def get_recommendations(user, max_recommendations):
         for liked_post_id in user_liked_posts:
             #safety check (protect against missing data if post deleted)
             if liked_post_id in post_to_users:
-                users_who_liked_liked = post_to_users[liked_post_id]
+                users_who_liked_liked = post_to_users[liked_post_id] #get users who liked same posts
                 
                 # Jaccard similarity!!
                 overlap = len(users_who_liked_candidate.intersection(users_who_liked_liked))

@@ -19,7 +19,7 @@
         name: 'profiles',
         params: { id: post.created_by.id },
         query: { view: 'portfolio', tag: tag.id }
-      }" class="text-sm bg-gray-100 hover:bg-[#e8f2d7] rounded-full px-3 py-1 text-gray-700">
+      }" class="text-sm bg-gray-100 hover:bg-[#e8f2d7] rounded-full px-3 py-1 text-gray-700 ml-2">
         {{ tag.name }}
       </RouterLink>
     </div>
@@ -206,12 +206,12 @@ export default {
         axios
           .post(`/api/posts/${this.post.id}/remove-all-tags/`)
           .then(() => {
-            // Then remove from portfolio
+            // then from portfolio
             return axios.post(`/api/posts/${this.post.id}/remove_from_portfolio/`);
           })
           .then(response => {
             this.inPortfolio = false;
-            // Clear the tags array immediately in the frontend
+            // clear the tags array immediately in the frontend
             this.post.project_tags = [];
             this.$emit('postRemoved', this.post.id);
           })

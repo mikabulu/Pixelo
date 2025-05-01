@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from .serializers import PostSerializer, PostViewSerializer, CommentSerializer, PortfolioSerializer
-from .models import Post, Like, Comment, Portfolio, ProjectTag, Hashtag
+from .models import Post, Like, Comment, Portfolio, ProjectTag
 from .forms import PostForm, AttachmentForm
 from rest_framework.decorators import api_view
 from account.models import User
@@ -35,7 +35,7 @@ def post_delete(request, pk):
 @api_view(['GET'])
 def post_list(request):
     posts = Post.objects.all()
-    hashtag = request.GET.get('hashtag', '')
+    hashtag = request.GET.get('hashtag', '') #check URL for query param 
     if hashtag:
         posts = posts.filter(body__icontains='#' + hashtag)
 
