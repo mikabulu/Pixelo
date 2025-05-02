@@ -23,7 +23,7 @@ class PortfolioTest(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
     
-    def test_add_to_portfolio(self):
+    def test_add_portfolio(self):
         response = self.client.post(f'/api/posts/{self.post.id}/add_to_portfolio/')
         self.assertEqual(response.status_code, 200)
         portfolio = Portfolio.objects.get(user=self.user)
@@ -106,10 +106,9 @@ class FeedTest(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user1)
     
-    def test_feed_shows_followed_users(self):
+    def test_feed(self):
         response = self.client.get('/api/posts/feed/')
         self.assertEqual(response.status_code, 200)
-        
         data = json.loads(response.content)
         self.assertEqual(len(data), 1) #check the feed has one post
 
@@ -129,8 +128,30 @@ class LikeTest(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
     
-    def test_like_post(self):
+    def test_like(self):
         response = self.client.post(f'/api/posts/{self.post.id}/like/')
         self.assertEqual(response.status_code, 200)
-        self.post.refresh_from_db() 
+        self.post.refresh_from_db() #refreshpost instance
         self.assertEqual(self.post.likes_count, 1)
+
+class CommentTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="test@example.com",
+            name="Test User",
+            password="password123"
+        )
+        
+        self.post = Post.objects.create(
+            body="Test post",
+            created_by=self.user
+        )
+        
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_comment_post(self):
+        response = self.client.post(f'/api/posts/{self.post.id}/comment/', {'body': 'you ate sis!'})
+        self.assertEqual(response.status_code, 200)
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.comments_count, 1)
