@@ -148,8 +148,29 @@ class LikeTest(TestCase):
     def test_like(self):
         response = self.client.post(f'/api/posts/{self.post.id}/like/')
         self.assertEqual(response.status_code, 200)
-        self.post.refresh_from_db() #refreshpost instance
-        self.assertEqual(self.post.likes_count, 1)
+        is_liked_response = self.client.get(f'/api/posts/{self.post.id}/is_liked/')
+        self.assertEqual(is_liked_response.status_code, 200)
+    
+    def test_unlike(self):
+        # like post
+        response = self.client.post(f'/api/posts/{self.post.id}/like/')
+        self.assertEqual(response.status_code, 200)
+        is_liked_response = self.client.get(f'/api/posts/{self.post.id}/is_liked/')
+        self.assertEqual(is_liked_response.status_code, 200)
+        
+        #  unlike it
+        response = self.client.post(f'/api/posts/{self.post.id}/like/') 
+        self.assertEqual(response.status_code, 200)
+
+         #check like is false now 
+        is_liked_response = self.client.get(f'/api/posts/{self.post.id}/is_liked/')
+        self.assertEqual(is_liked_response.status_code, 200)
+        self.assertFalse(is_liked_response.json()['is_liked'])
+
+    
+    
+        
+
 
 class CommentTest(TestCase):
     def setUp(self):
