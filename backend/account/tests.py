@@ -57,3 +57,14 @@ class FollowTest(TestCase):
         response = self.client.post(f'/api/followers/follow/{self.user2.id}/')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.user1.is_following(self.user2))
+    
+    def test_unfollow_user(self):
+        #follow
+        response = self.client.post(f'/api/followers/follow/{self.user2.id}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.user1.is_following(self.user2))
+        
+        #unfollow
+        response = self.client.post(f'/api/followers/unfollow/{self.user2.id}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.user1.is_following(self.user2))
