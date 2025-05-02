@@ -30,7 +30,7 @@
         <img v-if="attachment.get_image" :src="attachment.get_image" class="w-full rounded-lg">
 
         <!-- video attachment-->
-        <video v-if="attachment.get_video" controls class="w-full rounded-lg">
+        <video v-if="attachment.get_video" controlsList="nodownload" controls class="">
           <source :src="attachment.get_video" type="video/mp4">
         </video>
       </div>

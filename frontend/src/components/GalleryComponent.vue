@@ -5,7 +5,7 @@
         <RouterLink :to="{ name: 'postview', params: { id: post.id } }">
           <img v-if="post.attachments[0]?.get_image" :src="post.attachments[0].get_image" class="w-full h-auto block"
             alt="Post image" />
-          <video v-else-if="post.attachments[0]?.get_video" controls class="w-full h-auto block">
+          <video v-else-if="post.attachments[0]?.get_video" controls class="" controlsList="nodownload">
             <source :src="post.attachments[0].get_video" type="video/mp4" />
             Your browser does not support the video.
           </video>
