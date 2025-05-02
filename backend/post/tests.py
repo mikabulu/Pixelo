@@ -26,7 +26,6 @@ class PortfolioTest(TestCase):
     def test_add_to_portfolio(self):
         response = self.client.post(f'/api/posts/{self.post.id}/add_to_portfolio/')
         self.assertEqual(response.status_code, 200)
-
         portfolio = Portfolio.objects.get(user=self.user)
         self.assertTrue(portfolio.posts.filter(id=self.post.id).exists())
 
@@ -113,3 +112,25 @@ class FeedTest(TestCase):
         
         data = json.loads(response.content)
         self.assertEqual(len(data), 1) #check the feed has one post
+
+class LikeTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="test@example.com",
+            name="Test User",
+            password="password123"
+        )
+        
+        self.post = Post.objects.create(
+            body="Test post",
+            created_by=self.user
+        )
+        
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+    
+    def test_like_post(self):
+        response = self.client.post(f'/api/posts/{self.post.id}/like/')
+        self.assertEqual(response.status_code, 200)
+        self.post.refresh_from_db() 
+        self.assertEqual(self.post.likes_count, 1)
