@@ -33,6 +33,17 @@ class PortfolioTest(TestCase):
         response = self.client.post('/api/posts/newtag/', {'name': 'testtag'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['name'], 'testtag')
+    
+    def test_post_tag(self):
+        #  create a tag
+        tag_response = self.client.post('/api/posts/newtag/', {'name': 'testtag'})
+        self.assertEqual(tag_response.status_code, 200)
+        tag_id = tag_response.json()['id']
+        #add to post
+        response = self.client.post(f'/api/posts/{self.post.id}/tag/{tag_id}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json().get('success'))
+
 
 
 
