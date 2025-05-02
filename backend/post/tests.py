@@ -3,6 +3,7 @@ from rest_framework.test import APIClient
 from account.models import User
 from .models import Post, Portfolio
 from django.core.files.uploadedfile import SimpleUploadedFile
+import json
 
 class PortfolioTest(TestCase):
     def setUp(self):
@@ -12,7 +13,7 @@ class PortfolioTest(TestCase):
             password="password123"
         )
         
-        # first create post 
+        # create post 
         self.post = Post.objects.create(
             body="Animation showcase",
             created_by=self.user
@@ -82,4 +83,33 @@ class MediaUploadTest(TestCase):
         post = Post.objects.get(body='Post with video')
         self.assertTrue(post.attachments.exists())
 
+
+class FeedTest(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            email="user1@example.com",
+            name="User One",
+            password="password123"
+        )
+        self.user2 = User.objects.create_user(
+            email="user2@example.com",
+            name="User Two",
+            password="password123"
+        )
         
+        self.user1.follow(self.user2)
+        
+        self.post = Post.objects.create(
+            body="User2 post",
+            created_by=self.user2
+        )
+        
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user1)
+    
+    def test_feed_shows_followed_users(self):
+        response = self.client.get('/api/posts/feed/')
+        self.assertEqual(response.status_code, 200)
+        
+        data = json.loads(response.content)
+        self.assertEqual(len(data), 1) #check the feed has one post
