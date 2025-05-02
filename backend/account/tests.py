@@ -1,5 +1,5 @@
 from django.test import TestCase
-from account.models import User
+from .models import User
 
 
 class AuthTest(TestCase):
