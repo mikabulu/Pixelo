@@ -48,7 +48,7 @@ class PortfolioTest(TestCase):
 
 
 
-class MediaUploadTest(TestCase):
+class PostTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             email="test@example.com",
@@ -98,6 +98,29 @@ class MediaUploadTest(TestCase):
         self.assertTrue(Post.objects.filter(body='Post with video').exists())
         post = Post.objects.get(body='Post with video')
         self.assertTrue(post.attachments.exists())
+
+class DeletePostTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="test@example.com",
+            name="Test User",
+            password="password123"
+        )
+        
+        self.post = Post.objects.create(
+            body="Test post",
+            created_by=self.user
+        )
+        
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+    
+    def test_delete_post(self):
+        response = self.client.delete(f'/api/posts/{self.post.id}/delete/')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Post.objects.filter(id=self.post.id).exists())
+    
+
 
 
 class FeedTest(TestCase):
@@ -193,3 +216,14 @@ class CommentTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.post.refresh_from_db()
         self.assertEqual(self.post.comments_count, 1)
+    
+    def test_delete_comment(self):
+        # create comment
+        response = self.client.post(f'/api/posts/{self.post.id}/comment/', {'body': 'you ate sis!'})
+        self.assertEqual(response.status_code, 200)
+        comment_id = response.json()['id']
+        
+        # delete 
+        response = self.client.delete(f'/api/posts/comments/{comment_id}/delete/')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.post.comments.filter(id=comment_id).exists())
