@@ -28,6 +28,12 @@ class PortfolioTest(TestCase):
         self.assertEqual(response.status_code, 200)
         portfolio = Portfolio.objects.get(user=self.user)
         self.assertTrue(portfolio.posts.filter(id=self.post.id).exists())
+    
+    def test_create_tag(self):
+        response = self.client.post('/api/posts/newtag/', {'name': 'testtag'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['name'], 'testtag')
+
 
 
 
