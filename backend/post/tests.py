@@ -1,7 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
 from account.models import User
-from .models import Post, Portfolio
+from .models import Post, Portfolio, ProjectTag
 from django.core.files.uploadedfile import SimpleUploadedFile
 import json
 
@@ -29,10 +29,66 @@ class PortfolioTest(TestCase):
         portfolio = Portfolio.objects.get(user=self.user)
         self.assertTrue(portfolio.posts.filter(id=self.post.id).exists())
     
+    def test_remove_portfolio(self):
+        # add to portfolio first
+        response = self.client.post(f'/api/posts/{self.post.id}/add_to_portfolio/')
+        self.assertEqual(response.status_code, 200)
+        portfolio = Portfolio.objects.get(user=self.user)
+        self.assertTrue(portfolio.posts.filter(id=self.post.id).exists())
+        
+        # remove from portfolio
+        response = self.client.post(f'/api/posts/{self.post.id}/remove_from_portfolio/')
+        self.assertEqual(response.status_code, 200)
+        portfolio = Portfolio.objects.get(user=self.user)
+        self.assertFalse(portfolio.posts.filter(id=self.post.id).exists())
+
+        # remove all tags
+        response = self.client.post(f'/api/posts/{self.post.id}/remove-all-tags/')
+        self.assertEqual(response.status_code, 200)
+        post = Post.objects.get(id=self.post.id)
+        self.assertEqual(post.project_tags.count(), 0)
+
+
+    
+
+class TagTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="test@example.com",
+            name="Test User",
+            password="password123"
+        )
+        
+        # create post 
+        self.post = Post.objects.create(
+            body="Animation showcase",
+            created_by=self.user
+        )
+        
+        # simulate authentication 
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
     def test_create_tag(self):
         response = self.client.post('/api/posts/newtag/', {'name': 'testtag'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['name'], 'testtag')
+    
+    def test_delete_tag(self):
+        # create tag
+        tag_response = self.client.post('/api/posts/newtag/', {'name': 'testtag'})
+        self.assertEqual(tag_response.status_code, 200)
+        tag_id = tag_response.json()['id']
+        
+        # delete 
+        response = self.client.delete(f'/api/posts/tags/{tag_id}/delete/')
+        self.assertEqual(response.status_code, 200)
+
+        # check its not in tag list 
+        tags_response = self.client.get(f'/api/posts/tags/{self.user.id}/')
+        self.assertEqual(tags_response.status_code, 200)
+        self.assertFalse(ProjectTag.objects.filter(id=tag_id).exists())
+
     
     def test_post_tag(self):
         #  create a tag
@@ -42,7 +98,26 @@ class PortfolioTest(TestCase):
         #add to post
         response = self.client.post(f'/api/posts/{self.post.id}/tag/{tag_id}/')
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.json().get('success'))
+        self.assertTrue(self.post.project_tags.filter(id=tag_id).exists())
+
+    def test_remove_post_tag(self):
+        # create tag
+        tag_response = self.client.post('/api/posts/newtag/', {'name': 'testtag'})
+        self.assertEqual(tag_response.status_code, 200)
+        tag_id = tag_response.json()['id']
+        
+        # add to post
+        response = self.client.post(f'/api/posts/{self.post.id}/tag/{tag_id}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.post.project_tags.filter(id=tag_id).exists())
+        
+        
+        # remove from post
+        response = self.client.post(f'/api/posts/{self.post.id}/untag/{tag_id}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.post.project_tags.filter(id=tag_id).exists())
+    
+   
 
 
 
@@ -120,7 +195,6 @@ class DeletePostTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Post.objects.filter(id=self.post.id).exists())
     
-
 
 
 class FeedTest(TestCase):
