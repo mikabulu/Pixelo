@@ -113,7 +113,7 @@ export default {
             this.isSearching = true;
 
             axios
-                .post('/api/search/', {
+                .post('/api/explore/search/', {
                     query: this.query
                 })
                 .then(response => {
@@ -127,7 +127,7 @@ export default {
         getRecommendations() {
 
             axios
-                .get('/api/posts/recommendations/')
+                .get('/api/explore/recommendations/')
                 .then(response => {
                     // filter recommendations posts from self and users followed
                     this.recommendations = response.data.filter(post =>

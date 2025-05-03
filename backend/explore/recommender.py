@@ -1,5 +1,5 @@
 from collections import defaultdict
-from .models import Post, Like
+from post.models import Post, Like
 
 
 def get_recommendations(user, max_recommendations):

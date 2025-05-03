@@ -4,6 +4,7 @@ from account.serializers import UserSerializer
 from post.models import Post
 from post.serializers import PostSerializer
 from rest_framework.decorators import api_view
+from .recommender import get_recommendations
 
 @api_view(['POST'])
 def search(request):
@@ -21,3 +22,10 @@ def search(request):
         'users': users_serializer.data, 
         'posts': posts_serializer.data},
         safe=False)
+
+
+@api_view(['GET'])
+def recommendations(request, limit=5):
+    recommended_posts = get_recommendations(request.user, max_recommendations=limit)
+    serializer = PostSerializer(recommended_posts, many=True, context={'request': request})
+    return JsonResponse(serializer.data, safe=False)
