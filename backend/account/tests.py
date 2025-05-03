@@ -1,6 +1,8 @@
 from django.test import TestCase
 from .models import User
 from rest_framework.test import APIClient
+from django.core.files.uploadedfile import SimpleUploadedFile
+import json
 
 
 class AuthTest(TestCase):
@@ -63,8 +65,52 @@ class FollowTest(TestCase):
         response = self.client.post(f'/api/followers/follow/{self.user2.id}/')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.user1.is_following(self.user2))
-        
+
         #unfollow
         response = self.client.post(f'/api/followers/unfollow/{self.user2.id}/')
         self.assertEqual(response.status_code, 200)
         self.assertFalse(self.user1.is_following(self.user2))
+
+
+class EditProfileTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="test@example.com",
+            name="Test User",
+            password="password123",
+            account_type="enthusiast",
+            bio="Original bio"
+        )
+        
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+    
+    def test_edit_profile(self):
+        image = SimpleUploadedFile(
+            name='test_image.jpg',
+            content=open('./testmedia/testimage.png', 'rb').read(),  
+            content_type='image/jpeg'
+        )
+
+        updated_data = {
+            'name': 'Updated Name',
+            'email': 'test@example.com',  
+            'bio': 'Updated bio content',
+            'account_type': 'professional',
+            'avatar': image
+        }
+        
+        response = self.client.post(
+            '/api/editprofile/', 
+            updated_data,
+            format='multipart'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        
+        # check
+        self.assertEqual(self.user.name, 'Updated Name')
+        self.assertEqual(self.user.bio, 'Updated bio content')
+        self.assertEqual(self.user.account_type, 'professional')
+        self.assertTrue(self.user.avatar)
+
