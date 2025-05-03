@@ -55,12 +55,12 @@ class FollowTest(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user1)
     
-    def test_follow_user(self):
+    def test_follow(self):
         response = self.client.post(f'/api/followers/follow/{self.user2.id}/')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.user1.is_following(self.user2))
     
-    def test_unfollow_user(self):
+    def test_unfollow(self):
         #follow
         response = self.client.post(f'/api/followers/follow/{self.user2.id}/')
         self.assertEqual(response.status_code, 200)

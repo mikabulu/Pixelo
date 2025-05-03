@@ -61,7 +61,7 @@ class RecommendationTest(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user3)
     
-    def test_recommendations_based_on_similarity(self):
+    def test_recommendations(self):
         # User3 liked 3
         # User1 liked 2 and 3 
         # User2 liked 3
@@ -96,7 +96,7 @@ class SearchTest(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user2)
 
-    def test_search_returns_correct_results(self):
+    def test_search(self):
         response = self.client.post('/api/explore/search/', {'query': 'Charlie'}, format='json')
 
         self.assertEqual(response.status_code, 200)

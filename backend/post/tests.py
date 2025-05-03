@@ -120,9 +120,6 @@ class TagTest(TestCase):
    
 
 
-
-
-
 class PostTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -190,7 +187,7 @@ class DeletePostTest(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
     
-    def test_delete_post(self):
+    def test_delete(self):
         response = self.client.delete(f'/api/posts/{self.post.id}/delete/')
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Post.objects.filter(id=self.post.id).exists())
@@ -225,6 +222,7 @@ class FeedTest(TestCase):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(len(data), 1) #check the feed has one post
+    
 
 class LikeTest(TestCase):
     def setUp(self):
@@ -264,9 +262,6 @@ class LikeTest(TestCase):
         self.assertEqual(is_liked_response.status_code, 200)
         self.assertFalse(is_liked_response.json()['is_liked'])
 
-    
-    
-        
 
 
 class CommentTest(TestCase):
@@ -285,13 +280,13 @@ class CommentTest(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
-    def test_comment_post(self):
+    def test_comment(self):
         response = self.client.post(f'/api/posts/{self.post.id}/comment/', {'body': 'you ate sis!'})
         self.assertEqual(response.status_code, 200)
         self.post.refresh_from_db()
         self.assertEqual(self.post.comments_count, 1)
     
-    def test_delete_comment(self):
+    def test_delete(self):
         # create comment
         response = self.client.post(f'/api/posts/{self.post.id}/comment/', {'body': 'you ate sis!'})
         self.assertEqual(response.status_code, 200)
@@ -301,3 +296,41 @@ class CommentTest(TestCase):
         response = self.client.delete(f'/api/posts/comments/{comment_id}/delete/')
         self.assertEqual(response.status_code, 200)
         self.assertFalse(self.post.comments.filter(id=comment_id).exists())
+
+class HashtagTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="test@example.com",
+            name="Test User",
+            password="password123"
+        )
+        
+        self.post = Post.objects.create(
+            body="#test",
+            created_by=self.user
+        )
+        self.post = Post.objects.create(
+            body="#test",
+            created_by=self.user
+        )
+        self.post = Post.objects.create(
+            body="no hashtag",
+            created_by=self.user
+        )
+        self.post = Post.objects.create(
+            body="#other",
+            created_by=self.user
+        )
+        
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+
+    def test_hashtag(self):
+        response = self.client.get('/api/posts/?hashtag=test')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(len(data), 2)
+        for post in data:
+            self.assertIn("#test", post['body'])
+

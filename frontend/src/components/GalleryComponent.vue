@@ -79,9 +79,7 @@ export default {
   },
   methods: {
     fetchPosts() {
-
       const userId = this.$route.params.id
-
       axios
         .get(`/api/posts/profiles/${userId}/`)
         .then(response => {
