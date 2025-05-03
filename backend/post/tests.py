@@ -15,7 +15,7 @@ class PortfolioTest(TestCase):
         
         # create post 
         self.post = Post.objects.create(
-            body="Animation showcase",
+            body="test post",
             created_by=self.user
         )
         
@@ -61,7 +61,7 @@ class TagTest(TestCase):
         
         # create post 
         self.post = Post.objects.create(
-            body="Animation showcase",
+            body="test post",
             created_by=self.user
         )
         
@@ -72,13 +72,18 @@ class TagTest(TestCase):
     def test_create_tag(self):
         response = self.client.post('/api/posts/newtag/', {'name': 'testtag'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['name'], 'testtag')
+        tag_id = response.json()['id']
+        
+        # check its in tag list
+        tags_response = self.client.get(f'/api/posts/tags/{self.user.id}/')
+        self.assertEqual(tags_response.status_code, 200)
+        self.assertTrue(ProjectTag.objects.filter(id=tag_id).exists())
     
     def test_delete_tag(self):
         # create tag
-        tag_response = self.client.post('/api/posts/newtag/', {'name': 'testtag'})
-        self.assertEqual(tag_response.status_code, 200)
-        tag_id = tag_response.json()['id']
+        response = self.client.post('/api/posts/newtag/', {'name': 'testtag'})
+        self.assertEqual(response.status_code, 200)
+        tag_id = response.json()['id']
         
         # delete 
         response = self.client.delete(f'/api/posts/tags/{tag_id}/delete/')
@@ -170,28 +175,18 @@ class PostTest(TestCase):
         self.assertTrue(Post.objects.filter(body='Post with video').exists())
         post = Post.objects.get(body='Post with video')
         self.assertTrue(post.attachments.exists())
-
-class DeletePostTest(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            email="test@example.com",
-            name="Test User",
-            password="password123"
-        )
-        
-        self.post = Post.objects.create(
-            body="Test post",
-            created_by=self.user
-        )
-        
-        self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
     
     def test_delete(self):
+        # create post 
+        self.post = Post.objects.create(
+            body="test post",
+            created_by=self.user
+        )
+        #delete
         response = self.client.delete(f'/api/posts/{self.post.id}/delete/')
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Post.objects.filter(id=self.post.id).exists())
-    
+
 
 
 class FeedTest(TestCase):
