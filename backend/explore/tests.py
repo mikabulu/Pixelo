@@ -74,4 +74,41 @@ class RecommendationTest(TestCase):
 
     
 
+class SearchTest(TestCase):
+    def setUp(self):
         
+        self.user1 = User.objects.create_user(
+            email="user1@example.com", 
+            name="Charlie",
+            password="password1"
+        )
+        self.user2 = User.objects.create_user(
+            email="user2@example.com", 
+            name="User Two",
+            password="password2"
+        )
+
+        self.post1 = Post.objects.create(
+            body="Charlie Post",
+            created_by=self.user1
+        )
+
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user2)
+
+    def test_search_returns_correct_results(self):
+        response = self.client.post('/api/explore/search/', {'query': 'Charlie'}, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+
+        # check Charlie appears 
+        user_names = [user['name'] for user in data['users']]
+        self.assertIn('Charlie', user_names)
+
+        # Check charlie's post appears 
+        post_bodies = [post['body'] for post in data['posts']]
+        self.assertIn('Charlie Post', post_bodies)
+
+
+
