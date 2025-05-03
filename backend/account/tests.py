@@ -29,6 +29,21 @@ class AuthTest(TestCase):
         # verify user created
         self.assertTrue(User.objects.filter(email='newuser@example.com').exists())
     
+    def test_signup_unique_email(self):
+        signup_data = {
+            'email': 'test@example.com',  
+            'name': 'Second User',             
+            'password1': 'password123',
+            'password2': 'password123',
+            'account_type': 'hobbyist'
+            }
+    
+        response = self.client.post('/api/signup/', signup_data)
+        data = json.loads(response.content)
+        self.assertEqual(data.get('message'), 'error')
+        self.assertEqual(User.objects.filter(email='test@example.com').count(), 1) #one user with this email exists 
+
+   
     def test_login(self):
         response = self.client.post('/api/login/', {
             'email': 'test@example.com',
@@ -113,4 +128,5 @@ class EditProfileTest(TestCase):
         self.assertEqual(self.user.bio, 'Updated bio content')
         self.assertEqual(self.user.account_type, 'professional')
         self.assertTrue(self.user.avatar)
+
 
