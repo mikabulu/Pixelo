@@ -135,7 +135,7 @@
     <!-- Add Post Modal -->
     <div v-if="showAddPostModal" class="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50">
         <div class="bg-white border border-gray-200 rounded-lg max-w-lg w-full mx-4">
-            <div class="flex justify-between items-center p-4 border-b">
+            <div class="flex justify-between items-center p-4">
                 <h3 class="font-semibold">Add Post</h3>
                 <button @click="showAddPostModal = false" class="text-gray-500 hover:text-gray-700">✕</button>
             </div>
@@ -152,11 +152,11 @@
                     </video>
                 </div>
                 <div class="p-4">
-                    <textarea v-model="body" class="p-4 w-full bg-gray-100 rounded-lg" placeholder="Add Post"></textarea>
+                    <textarea v-model="body" class="p-4 w-full bg-gray-100 rounded-lg" placeholder="Add a text post or caption!"></textarea>
                 </div>
-                <div class="p-4 border-t border-gray-100 flex justify-between">
+                <div class="p-4 flex justify-between">
                     <div class="flex space-x-2">
-                        <label class="custom-file-upload inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">
+                        <label class="custom-file-upload inline-block py-4 p-3 bg-[#bfdaa4] hover:bg-[#e8f2d7] grey text-white rounded-lg">
                             <input type="file" ref="file" @change="onFileChange" accept="image/*,video/*" />
                             Upload Media
                         </label>

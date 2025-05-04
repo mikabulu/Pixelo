@@ -12,7 +12,7 @@
                     </div>
                     <div class="justify-self-center">
                         <label class="block text-sm font-medium text-gray-700 mb-2 justify-self-center">Avatar</label>
-                        <label class="custom-file-upload inline-block py-2 px-2 bg-gray-600 text-white rounded-lg">
+                        <label class="custom-file-upload inline-block py-2 px-2 bg-[#bfdaa4] hover:bg-[#a9c191] text-white rounded-lg">
                             <input type="file" ref="file" @change="onFileChange" accept="image/*" />
                             Upload Image
                         </label>
