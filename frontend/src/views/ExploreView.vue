@@ -88,6 +88,7 @@ export default {
             users: [],
             posts: [],
             recommendations: [],
+            recommendedPostIDs:[],
             isSearching: false,
             followingIds: []
         }
@@ -134,6 +135,7 @@ export default {
                         post.created_by.id !== this.userStore.user.id &&
                         !this.followingIds.includes(post.created_by.id)
                     );
+                    this.recommendedPostIDs = response.data.map(post => post.id);
                 })
                 .catch(error => {
                     console.log('error getting recommendations:', error);
@@ -144,10 +146,11 @@ export default {
                 .get('/api/posts/')
                 .then(response => {
                     if (!this.isSearching) {
-                        // filter explore posts from self and users followed
+                        // filter explore posts from self, users followed and recommended posts 
                         this.posts = response.data.filter(post =>
                             post.created_by.id !== this.userStore.user.id &&
-                            !this.followingIds.includes(post.created_by.id)
+                            !this.followingIds.includes(post.created_by.id) &&
+                            !this.recommendedPostIDs.includes(post.id) 
                         );
                     }
                 })
