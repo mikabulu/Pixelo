@@ -22,7 +22,7 @@
 
         <div class="bg-white border border-gray-200 rounded-lg mb-2" v-for="comment in post.comments"
             v-bind:key="comment.id">
-            <CommentComponent v-bind:comment="comment" @commentDeleted="handleCommentDeleted" />
+            <CommentComponent v-bind:comment="comment" v-bind:postOwnerId="post.created_by.id" @commentDeleted="handleCommentDeleted" />
         </div>
     </div>
 </template>
