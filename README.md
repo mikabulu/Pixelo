@@ -12,7 +12,6 @@ Pixelo is a social media platform built for animators and artists to share their
 - **Explore page** — surfaces content using item-based collaborative filtering with Jaccard similarity, analysing relationships between posts to generate recommendations
 - **User matching** — discover and connect with other animators and artists with similar interests
 - **Authentication** — user registration and login
-- **Pagination** — smooth scrolling through posts and feeds
 - **Responsive design** — works across different screen sizes
 
 ## Tech Stack
